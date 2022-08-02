@@ -70,7 +70,7 @@ public class AASParser {
     String rs = null;
     if (lm.size() == 1) {
       Endpoint[] es = lm.get(0).endpoints;
-      if (es.length > 0l) {
+      if (es.length > 0) {
         rs = es[0].address;
       }
     }
