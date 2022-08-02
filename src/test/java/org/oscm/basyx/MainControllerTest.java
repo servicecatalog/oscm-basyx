@@ -49,4 +49,17 @@ public class MainControllerTest {
     System.out.println(resp.getBody());
     assertTrue(resp.getBody().contains("Nameplate"));
   }
+  
+  
+  //@Test
+  void xml() {
+
+    // when
+    ResponseEntity<String> resp = mainController.xml("Festo_3S7PM0CP4BD");
+
+    // then
+    assertEquals(HttpStatus.OK, resp.getStatusCode());
+    System.out.println(resp.getBody());
+    assertTrue(resp.getBody().contains("Nameplate"));
+  }
 }
