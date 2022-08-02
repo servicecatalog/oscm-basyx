@@ -1,2 +1,2 @@
-# oscm-basyx
+# WIP: oscm-basyx
 The OSCM BaSyx Connector.
