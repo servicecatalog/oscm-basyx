@@ -9,20 +9,13 @@
 package org.oscm.basyx;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 
 import org.oscm.basyx.model.NameplateModel;
-import org.oscm.basyx.model.SubmodelElement;
+import org.oscm.basyx.oscmmodel.ServiceParameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -42,87 +35,68 @@ import com.google.gson.GsonBuilder;
 @Controller
 public class MainController {
 
-    @Autowired
-    HTTPConnector conn;
+	@Autowired
+	HTTPConnector conn;
 
-    @Value("${BASYX_REGISTRY_URL}")
-    protected String registryUrl;
+	@Value("${BASYX_REGISTRY_URL}")
+	protected String registryUrl;
 
-    @GetMapping(value = "/json/{aasId}", produces = MediaType.APPLICATION_PROBLEM_JSON_VALUE)
-    public ResponseEntity<String> index(@PathVariable String aasId) {
+	@GetMapping(value = "/json/{aasId}", produces = MediaType.APPLICATION_PROBLEM_JSON_VALUE)
+	public ResponseEntity<String> index(@PathVariable String aasId) {
 
-        String aasShortId = aasId;
-        try {
-            aasShortId = URLDecoder.decode(aasId, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+		String aasShortId = aasId;
+		try {
+			aasShortId = URLDecoder.decode(aasId, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
 
-        try {
-            Optional<NameplateModel> npm = AASParser.getNameplateModel(conn, registryUrl,
-                    aasShortId);
-            if (npm.isPresent()) {
-                final String json = toJson(npm.get());
-                return ResponseEntity.ok().body(json);
-            }
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		try {
+			Optional<NameplateModel> npm = AASParser.getNameplateModel(conn, registryUrl, aasShortId);
+			if (npm.isPresent()) {
+				final String json = toJson(npm.get());
+				return ResponseEntity.ok().body(json);
+			}
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
+		} catch (IOException e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
 
-    @GetMapping(value = "/xml/{aasId}", produces = MediaType.APPLICATION_PROBLEM_XML_VALUE)
-    public ResponseEntity<String> xml(@PathVariable String aasId) {
+	@GetMapping(value = "/xml/{aasId}", produces = MediaType.APPLICATION_PROBLEM_XML_VALUE)
+	public ResponseEntity<String> xml(@PathVariable String aasId) {
 
-        String aasShortId = aasId;
-        try {
-            aasShortId = URLDecoder.decode(aasId, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+		String aasShortId = aasId;
+		try {
+			aasShortId = URLDecoder.decode(aasId, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
 
-        try {
-            Optional<NameplateModel> npm = AASParser.getNameplateModel(conn, registryUrl,
-                    aasShortId);
-            if (npm.isPresent()) {
-                SubmodelElement[] se = npm.get().submodelElements;
-                List<SubmodelElement> le = Arrays.asList(se).stream()
-                        .filter(sm -> "Property".equalsIgnoreCase(sm.modelType.name))
-                        .collect(Collectors.toList());
-                if (!le.isEmpty()) {
-                    final String xml = toXML(le.get(0));
-                    return ResponseEntity.ok().body(xml);
-                }
-            }
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		try {
+			Optional<NameplateModel> npm = AASParser.getNameplateModel(conn, registryUrl, aasShortId);
+			if (npm.isPresent()) {
+				Optional<List<ServiceParameter>> parList = Nameplate.parseProperties(npm.get());
 
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
+				String tsId = "TS_" + aasShortId;
 
-    private String toJson(NameplateModel nameplate) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        return gson.toJson(nameplate);
-    }
+				if (!parList.isPresent()) {
 
-    private static String toXML(SubmodelElement sme) throws IOException {
-        String xmlString = "";
-        try {
-            JAXBContext ctx = JAXBContext.newInstance(SubmodelElement.class);
-            Marshaller ms = ctx.createMarshaller();
-            ms.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE); 
+					final String xml = "";
+					return ResponseEntity.ok().body(xml);
+				}
+			}
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
-            StringWriter writer = new StringWriter();
-            ms.marshal(sme, writer);
-            xmlString = writer.toString();
+		} catch (IOException e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
 
-        } catch (JAXBException e) {
-            throw new IOException(e);
-        }
-
-        return xmlString;
-    }
+	private String toJson(NameplateModel nameplate) {
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		return gson.toJson(nameplate);
+	}
 
 }

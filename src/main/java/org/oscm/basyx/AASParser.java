@@ -22,96 +22,76 @@ import com.google.gson.Gson;
 /** @author goebel */
 public class AASParser {
 
-  public static Model[] parse(String json) {
-    return new Gson().fromJson(json, Model[].class);
-  }
+	public static Model[] parse(String json) {
+		return new Gson().fromJson(json, Model[].class);
+	}
 
-  static Optional<Model> getFirstNameplate(Model m) {
-    Model rs = null;
-    for (Model sm : m.submodels) {
-      if ("Nameplate".equals(sm.idShort)) {
-        rs = sm;
-      }
-    }
+	static Optional<Model> getFirstNameplate(Model m) {
+		Model rs = null;
+		for (Model sm : m.submodels) {
+			if ("Nameplate".equals(sm.idShort)) {
+				rs = sm;
+			}
+		}
 
-    return Optional.ofNullable(rs);
-  }
+		return Optional.ofNullable(rs);
+	}
 
-  static Optional<NameplateModel> parseNameplate(String json) {
-    NameplateModel rs = null;
+	static Optional<String> getFirstNameplateEndpoint(String json) {
 
-    rs = new Gson().fromJson(json, NameplateModel.class);
+		Model[] ms = parse(json);
 
-    return Optional.ofNullable(rs);
-  }
+		List<Endpoint> l = Arrays.asList(ms).stream().map(m -> m.endpoints).map(e -> e[0]).collect(Collectors.toList());
+		String rs = null;
+		if (!l.isEmpty()) {
+			rs = l.get(0).address;
+		}
+		return Optional.ofNullable(rs);
+	}
 
-  static Optional<String> getFirstNameplateEndpoint(String json) {
+	static Optional<String> getNameplateEndpointForAAS(String json, String aasId) {
+		final Model[] ms = parse(json);
+		List<Model> lm = Arrays.asList(ms).stream().filter(m -> aasId.equals(m.idShort)).collect(Collectors.toList());
 
-    Model[] ms = parse(json);
+		String rs = null;
+		if (lm.size() == 1) {
+			Model[] sm = lm.get(0).submodels;
+			Optional<Model> npm = findNameplateFromModels(sm);
+			if (npm.isPresent()) {
+				Endpoint[] eps = npm.get().endpoints;
+				if (eps.length > 0) {
+					rs = eps[0].address;
+				}
+			}
+		}
+		return Optional.ofNullable(rs);
+	}
 
-    List<Endpoint> l =
-        Arrays.asList(ms).stream()
-            .map(m -> m.endpoints)
-            .map(e -> e[0])
-            .collect(Collectors.toList());
-    String rs = null;
-    if (!l.isEmpty()) {
-      rs = l.get(0).address;
-    }
-    return Optional.ofNullable(rs);
-  }
+	static Optional<Model> findNameplateFromModels(Model[] sm) {
+		final List<Model> ml = Arrays.asList(sm).stream().filter(s -> "Nameplate".equalsIgnoreCase(s.idShort))
+				.collect(Collectors.toList());
+		if (ml.isEmpty()) {
+			return Optional.empty();
+		}
+		return Optional.ofNullable(ml.get(0));
+	}
 
-  static Optional<String> getNameplateEndpointForAAS(String json, String aasId) {
-    final Model[] ms = parse(json);
-    List<Model> lm =
-        Arrays.asList(ms).stream()
-            .filter(m -> aasId.equals(m.idShort))
-            .collect(Collectors.toList());
+	static Optional<String> getFirstNameplateEndpoint(HTTPConnector conn, String url) throws IOException {
+		String json = conn.loadFromURL(url);
+		return getFirstNameplateEndpoint(json);
+	}
 
-    String rs = null;
-    if (lm.size() == 1) {
-      Model[] sm = lm.get(0).submodels;
-      Optional<Model> npm = findNameplateFromModels(sm);
-      if (npm.isPresent()) {
-        Endpoint[] eps = npm.get().endpoints;
-        if (eps.length > 0) {
-          rs = eps[0].address;
-        }
-      }
-    }
-    return Optional.ofNullable(rs);
-  }
+	static Optional<String> getNameplateEndpoint(HTTPConnector conn, String url, String aasId) throws IOException {
+		String json = conn.loadFromURL(url);
+		return getNameplateEndpointForAAS(json, aasId);
+	}
 
-  static Optional<Model> findNameplateFromModels(Model[] sm) {
-    final List<Model> ml =
-        Arrays.asList(sm).stream()
-            .filter(s -> "Nameplate".equalsIgnoreCase(s.idShort))
-            .collect(Collectors.toList());
-    if (ml.isEmpty()) {
-      return Optional.empty();
-    }
-    return Optional.ofNullable(ml.get(0));
-  }
+	static Optional<NameplateModel> getNameplateModel(HTTPConnector conn, String url, String aasId) throws IOException {
 
-  static Optional<String> getFirstNameplateEndpoint(HTTPConnector conn, String url)
-      throws IOException {
-    String json = conn.loadFromURL(url);
-    return getFirstNameplateEndpoint(json);
-  }
-
-  static Optional<String> getNameplateEndpoint(HTTPConnector conn, String url, String aasId)
-      throws IOException {
-    String json = conn.loadFromURL(url);
-    return getNameplateEndpointForAAS(json, aasId);
-  }
-
-  static Optional<NameplateModel> getNameplateModel(HTTPConnector conn, String url, String aasId)
-      throws IOException {
-
-    Optional<String> npUrl = getNameplateEndpoint(conn, url, aasId);
-    if (npUrl.isPresent()) {
-      return parseNameplate(conn.loadFromURL(npUrl.get()));
-    }
-    return Optional.empty();
-  }
+		Optional<String> npUrl = getNameplateEndpoint(conn, url, aasId);
+		if (npUrl.isPresent()) {
+			return Nameplate.parseNameplate(conn.loadFromURL(npUrl.get()));
+		}
+		return Optional.empty();
+	}
 }

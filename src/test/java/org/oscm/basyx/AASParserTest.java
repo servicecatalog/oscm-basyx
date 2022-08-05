@@ -50,7 +50,7 @@ public class AASParserTest {
     final String json = givenNameplateJson();
 
     // when
-    Optional<NameplateModel> nm = AASParser.parseNameplate(json);
+    Optional<NameplateModel> nm = Nameplate.parseNameplate(json);
 
     // then
     assertTrue(nm.isPresent());
