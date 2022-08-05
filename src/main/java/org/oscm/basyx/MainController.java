@@ -1,10 +1,10 @@
-/*******************************************************************************
- *
- *  Copyright FUJITSU LIMITED 2022
- *
- *  Creation Date: 29.07.2022
- *
- *******************************************************************************/
+/*
+  ******************************************************************************
+
+  <p>Copyright FUJITSU LIMITED 2022
+
+  <p>*****************************************************************************
+ */
 
 package org.oscm.basyx;
 
@@ -39,7 +39,7 @@ public class MainController {
   @GetMapping(value = "/json/{aasId}", produces = MediaType.APPLICATION_PROBLEM_JSON_VALUE)
   public ResponseEntity<String> index(@PathVariable String aasId) {
 
-    String aasShortId = aasId;
+    String aasShortId;
     try {
       aasShortId = URLDecoder.decode(aasId, "UTF-8");
     } catch (UnsupportedEncodingException e) {
@@ -62,7 +62,7 @@ public class MainController {
   @GetMapping(value = "/xml/{aasId}", produces = MediaType.APPLICATION_PROBLEM_XML_VALUE)
   public ResponseEntity<String> xml(@PathVariable String aasId) {
 
-    String aasShortId = aasId;
+    String aasShortId;
     try {
       aasShortId = URLDecoder.decode(aasId, "UTF-8");
     } catch (UnsupportedEncodingException e) {

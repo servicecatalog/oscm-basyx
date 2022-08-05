@@ -1,10 +1,10 @@
-/*******************************************************************************
- *
- *  Copyright FUJITSU LIMITED 2022
- *
- *  Creation Date: 29.07.2022
- *
- *******************************************************************************/
+/*
+  ******************************************************************************
+
+  <p>Copyright FUJITSU LIMITED 2022
+
+  <p>*****************************************************************************
+ */
 
 package org.oscm.basyx;
 
@@ -29,7 +29,6 @@ public class MainControllerTest {
 
   @BeforeEach
   public void setup() throws Exception {
-
     HTTPConnector hc = mock(HTTPConnector.class);
     doReturn(AAS_JSON).when(hc).loadFromURL(contains("registry"));
     doReturn(NAMEPLATE_JSON).when(hc).loadFromURL(contains("aasServer"));

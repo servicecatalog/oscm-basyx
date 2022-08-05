@@ -1,10 +1,11 @@
-/**
- * ******************************************************************************
- *
- * <p>Copyright FUJITSU LIMITED 2022
- *
- * <p>*****************************************************************************
+/*
+  ******************************************************************************
+
+  <p>Copyright FUJITSU LIMITED 2022
+
+  <p>*****************************************************************************
  */
+
 package org.oscm.basyx;
 
 import com.google.gson.Gson;
@@ -38,7 +39,7 @@ public class AASParser {
   static Optional<String> getNameplateEndpointForAAS(String json, String aasId) {
     final Model[] ms = parse(json);
     List<Model> lm =
-        Arrays.asList(ms).stream()
+        Arrays.stream(ms)
             .filter(m -> aasId.equals(m.idShort))
             .collect(Collectors.toList());
 
@@ -58,7 +59,7 @@ public class AASParser {
 
   static Optional<Model> findNameplateFromModels(Model[] sm) {
     final List<Model> ml =
-        Arrays.asList(sm).stream()
+        Arrays.stream(sm)
             .filter(s -> "Nameplate".equalsIgnoreCase(s.idShort))
             .collect(Collectors.toList());
     if (ml.isEmpty()) {
