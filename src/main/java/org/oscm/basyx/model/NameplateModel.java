@@ -1,24 +1,19 @@
 /*******************************************************************************
- *                                                                              
- *  Copyright FUJITSU LIMITED 2022                                           
- *                                                                                                                                 
- *  Creation Date: 29.07.2022                                                      
- *                                                                              
+ *
+ *  Copyright FUJITSU LIMITED 2022
+ *
+ *  Creation Date: 29.07.2022
+ *
  *******************************************************************************/
 
 package org.oscm.basyx.model;
 
-/**
- * @author goebel
- *
- */
+/** @author goebel */
 public class NameplateModel {
-    public ModelType modelType;
-    public String idShort;
-    public String kind;
-    public Identification identification;
-
-    public SubmodelElement[] submodelElements;
-
-    public SemanticId semanticId;
+  public ModelType modelType;
+  public String idShort;
+  public String kind;
+  public Identification identification;
+  public SubmodelElement[] submodelElements;
+  public SemanticId semanticId;
 }
