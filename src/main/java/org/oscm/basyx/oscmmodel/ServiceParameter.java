@@ -1,25 +1,26 @@
-/*******************************************************************************
- *                                                                              
- *  Copyright FUJITSU LIMITED 2022                                           
- *                                                                                                                                 
- *  Creation Date: 03.08.2022                                                      
- *                                                                              
- *******************************************************************************/
+/*
+ ******************************************************************************
+
+ <p>Copyright FUJITSU LIMITED 2022
+
+ <p>*****************************************************************************
+*/
 
 package org.oscm.basyx.oscmmodel;
 
-/**
- * @author goebel
- *
- */
-public class ServiceParameter {
-	String type;
-	String defaultValue;
-	String name;
+import org.oscm.basyx.model.SubmodelElement;
 
-	public ServiceParameter(String type, String defaultValue, String name) {
-		this.type = type;
-		this.defaultValue = defaultValue;
-		this.name = name;
-	}
+/** @author goebel */
+public class ServiceParameter {
+  public String type;
+  public String defaultValue;
+  public String name;
+  public String category;
+
+  public ServiceParameter(SubmodelElement prop) {
+    this.type = prop.valueType;
+    this.defaultValue = prop.value.toString();
+    this.name = prop.idShort;
+    this.category = prop.category;
+  }
 }

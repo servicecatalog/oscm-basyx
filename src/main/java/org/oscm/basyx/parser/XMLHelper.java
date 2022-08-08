@@ -1,0 +1,116 @@
+package org.oscm.basyx.parser;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+/** @author goebel */
+public class XMLHelper {
+
+  protected static String getAttributeValue(Node node, String name) {
+    return getAttributeValue(node, name, "");
+  }
+
+  public static String getAttributeValue(Node node, String name, String defaultValue) {
+    Node attr = node.getAttributes().getNamedItem(name);
+    if (attr != null) return attr.getNodeValue();
+    return defaultValue;
+  }
+
+  public static Document convertToDocument(String string)
+      throws SAXException, ParserConfigurationException, IOException {
+
+    DocumentBuilderFactory dfactory = DocumentBuilderFactory.newInstance();
+
+    dfactory.setValidating(false);
+    dfactory.setIgnoringElementContentWhitespace(true);
+    dfactory.setNamespaceAware(true);
+    DocumentBuilder builder = dfactory.newDocumentBuilder();
+
+    Document doc = builder.parse(new InputSource(new StringReader(string)));
+    return doc;
+  }
+
+  public static List<Node> getChildrenByTag(Node parent, String tagName) {
+    NodeList childs = parent.getChildNodes();
+    List<Node> children = new ArrayList<Node>();
+    for (int j = 0; j < childs.getLength(); j++) {
+      if (tagName.equals(childs.item(j).getNodeName())) {
+        children.add(childs.item(j));
+      }
+    }
+    return children;
+  }
+
+  public static Optional<Node> getChildById(Node parent, String tagName, String id) {
+    List<Node> children = getChildrenByTag(parent, tagName);
+    for (Node child : children) {
+      String anId = getAttributeValue(child, "id", "");
+      if (anId.equalsIgnoreCase(id)) {
+        return Optional.of(child);
+      }
+    }
+    return Optional.empty();
+  }
+
+  public static String toString(Document doc, boolean stripBlanks) {
+    try {
+      Transformer transformer = TransformerFactory.newInstance().newTransformer();
+      DOMSource domSource = new DOMSource(doc);
+
+      transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+      transformer.setOutputProperty("http://www.oracle.com/xml/is-standalone", "yes");
+      transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+      transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+      transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+      StringWriter w = new StringWriter();
+      StreamResult result = new StreamResult(w);
+
+      DOMSource source = new DOMSource(doc);
+      transformer.transform(source, result);
+      String xml = w.toString();
+      if (stripBlanks) xml = xml.replaceAll(">\\s+?<", "><");
+      return xml;
+    } catch (Exception ex) {
+      throw new RuntimeException(ex);
+    }
+  }
+
+  public static Element createChild(Node node, String parameterDefinition) {
+    Element elm = node.getOwnerDocument().createElement(parameterDefinition);
+    node.appendChild(elm);
+    return elm;
+  }
+
+  public static void addAttribute(Element pmd, String name, String val) {
+    pmd.setAttribute(name, val);
+  }
+
+  public static boolean contains(List<Node> list, String name, String val) {
+    for (Node n : list) {
+      String id = ((Element) n).getAttribute("id");
+      if (!id.equals(name)) continue;
+      String aDefault = ((Element) n).getAttribute("default");
+      if (val.equals(aDefault)) return true;
+    }
+    return false;
+  }
+}

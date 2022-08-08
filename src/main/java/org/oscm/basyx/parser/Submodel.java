@@ -1,0 +1,25 @@
+/*
+ ******************************************************************************
+
+ <p>Copyright FUJITSU LIMITED 2022
+
+ <p>*****************************************************************************
+*/
+
+package org.oscm.basyx.parser;
+
+import org.oscm.basyx.model.NameplateModel;
+import org.oscm.basyx.model.SubmodelElement;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class Submodel {
+
+  static List<SubmodelElement> readProperties(NameplateModel npm) {
+    return Arrays.asList(npm.submodelElements).stream()
+        .filter(sm -> "PARAMETER".equalsIgnoreCase(sm.category))
+        .collect(Collectors.toList());
+  }
+}

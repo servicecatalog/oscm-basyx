@@ -12,6 +12,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.oscm.basyx.model.NameplateModel;
 import org.oscm.basyx.oscmmodel.ServiceParameter;
+import org.oscm.basyx.parser.AAS;
+import org.oscm.basyx.parser.Nameplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -47,7 +49,7 @@ public class MainController {
     }
 
     try {
-      Optional<NameplateModel> npm = AASParser.getNameplateModel(conn, registryUrl, aasShortId);
+      Optional<NameplateModel> npm = AAS.getNameplate(conn, registryUrl, aasShortId);
       if (npm.isPresent()) {
         final String json = toJson(npm.get());
         return ResponseEntity.ok().body(json);
@@ -70,7 +72,7 @@ public class MainController {
     }
 
     try {
-      Optional<NameplateModel> npm = AASParser.getNameplateModel(conn, registryUrl, aasShortId);
+      Optional<NameplateModel> npm = AAS.getNameplate(conn, registryUrl, aasShortId);
       if (npm.isPresent()) {
         Optional<List<ServiceParameter>> parList = Nameplate.parseProperties(npm.get());
 

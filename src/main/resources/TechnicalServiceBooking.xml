@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><tns:TechnicalServices xmlns:tns="oscm.serviceprovisioning/1.9/TechnicalService.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="oscm.serviceprovisioning/1.9/TechnicalService.xsd ../../oscm-serviceprovisioning/javares/TechnicalServices.xsd">
+  <tns:TechnicalService accessType="USER" allowingOnBehalfActing="false" baseUrl="" billingIdentifier="NATIVE_BILLING" build="2022-08-08" id="Machine_Rental_v2" loginPath="/" onlyOneSubscriptionPerUser="false" provisioningPassword="" provisioningType="ASYNCHRONOUS" provisioningUrl="http://oscm-app:8880/oscm-app/webservices/oscm-app/oscm-app/org.oscm.app.v2_0.service.AsynchronousProvisioningProxy?wsdl" provisioningUsername="" provisioningVersion="1">
+    <AccessInfo locale="en">Access Info from TS</AccessInfo>
+    <LocalizedDescription locale="en">A sample application for booking Industry 4.0 Machines</LocalizedDescription>
+    <LocalizedLicense locale="en">License Agreement</LocalizedLicense>
+    <ParameterDefinition configurable="false" default="ess.shell" id="APP_CONTROLLER_ID" mandatory="true" valueType="STRING">
+      <LocalizedDescription locale="en">The ID of config controller</LocalizedDescription>
+      <LocalizedDescription locale="de"/>
+      <LocalizedDescription locale="ja"/>
+    </ParameterDefinition>
+    <ParameterDefinition configurable="true" id="PROVISIONING_SCRIPT" mandatory="true" valueType="STRING">
+      <LocalizedDescription locale="en">Provisioning Script. Absolute filesystem path or URL to script file</LocalizedDescription>
+      <LocalizedDescription locale="de"/>
+      <LocalizedDescription locale="ja"/>
+    </ParameterDefinition>
+    <ParameterDefinition configurable="true" id="DEPROVISIONING_SCRIPT" mandatory="true" valueType="STRING">
+      <LocalizedDescription locale="en">Deprovisioning Script. Absolute filesystem path or URL to script file</LocalizedDescription>
+      <LocalizedDescription locale="de"/>
+      <LocalizedDescription locale="ja"/>
+    </ParameterDefinition>
+    <ParameterDefinition configurable="true" id="UPDATE_SCRIPT" mandatory="true" valueType="STRING">
+      <LocalizedDescription locale="en">Update Script. Absolute filesystem path or URL to script file</LocalizedDescription>
+      <LocalizedDescription locale="de"/>
+      <LocalizedDescription locale="ja"/>
+    </ParameterDefinition>
+    <ParameterDefinition configurable="true" id="ASSIGN_USER_SCRIPT" mandatory="true" valueType="STRING">
+      <LocalizedDescription locale="en">Assign User Script. Absolute filesystem path or URL to script file</LocalizedDescription>
+      <LocalizedDescription locale="de"/>
+      <LocalizedDescription locale="ja"/>
+    </ParameterDefinition>
+    <ParameterDefinition configurable="true" id="DEASSIGN_USER_SCRIPT" mandatory="true" valueType="STRING">
+      <LocalizedDescription locale="en">Deassign User Script. Absolute filesystem path or URL to script file</LocalizedDescription>
+      <LocalizedDescription locale="de"/>
+      <LocalizedDescription locale="ja"/>
+    </ParameterDefinition>
+    <ParameterDefinition configurable="true" id="CHECK_STATUS_SCRIPT" mandatory="true" valueType="STRING">
+      <LocalizedDescription locale="en">Retrieve status of provisioned instance. Absolute filesystem path or URL to script file</LocalizedDescription>
+      <LocalizedDescription locale="de"/>
+      <LocalizedDescription locale="ja"/>
+    </ParameterDefinition>
+    <ParameterDefinition configurable="true" default="600" id="SCRIPT_TIMEOUT_SECONDS" mandatory="true" valueType="INTEGER">
+      <LocalizedDescription locale="en">Number of seconds until a running script is canceled</LocalizedDescription>
+      <LocalizedDescription locale="de"/>
+      <LocalizedDescription locale="ja"/>
+    </ParameterDefinition>
+
+    <Event id="EVENT_USAGE_HOURS_RENTED_MACHINE">
+      <LocalizedDescription locale="de">Benutzung Stunden für gemieteten Gerät</LocalizedDescription>
+      <LocalizedDescription locale="en">Usage Hours of Rented Machine</LocalizedDescription>
+      <LocalizedDescription locale="ja"/>
+    </Event>
+    <Operation actionURL="http://oscm-app:8880/oscm-app/webservices/oscm-app/oscm-app/org.oscm.app.v2_0.service.AsynchronousOperationProxy?wsdl" id="START_MACHINE">
+      <LocalizedName locale="en">Start Machine</LocalizedName>
+      <LocalizedDescription locale="de">Maschine Starten</LocalizedDescription>
+    </Operation>
+    <Operation actionURL="http://oscm-app:8880/oscm-app/webservices/oscm-app/oscm-app/org.oscm.app.v2_0.service.AsynchronousOperationProxy?wsdl" id="STOP_MACHINE">
+      <LocalizedName locale="en">Stop Machine</LocalizedName>
+      <LocalizedDescription locale="de">Maschine Stoppen</LocalizedDescription>
+    </Operation>
+  </tns:TechnicalService>
+</tns:TechnicalServices>

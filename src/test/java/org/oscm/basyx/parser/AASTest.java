@@ -1,23 +1,22 @@
 /*
-  ******************************************************************************
+ ******************************************************************************
 
-  <p>Copyright FUJITSU LIMITED 2022
+ <p>Copyright FUJITSU LIMITED 2022
 
-  <p>*****************************************************************************
- */
+ <p>*****************************************************************************
+*/
 
-package org.oscm.basyx;
+package org.oscm.basyx.parser;
 
 import org.junit.jupiter.api.Test;
-import org.oscm.basyx.model.Model;
 import org.oscm.basyx.model.NameplateModel;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /** @author goebel */
-public class AASParserTest {
+public class AASTest {
 
   @Test
   public void parse_simple() {
@@ -25,23 +24,7 @@ public class AASParserTest {
     String json = givenAASJson();
 
     // when
-    AASParser.parse(json);
-  }
-
-  @Test
-  public void getFirstNameplate() {
-
-    // given
-    final String json = givenAASJson();
-    Model[] ms = AASParser.parse(json);
-
-    assertTrue(ms.length > 0);
-
-    // when
-    Optional<Model> np = AASParser.getFirstNameplate(ms[0]);
-
-    // then
-    assertTrue(np.isPresent());
+    AAS.parse(json);
   }
 
   @Test
@@ -62,7 +45,7 @@ public class AASParserTest {
     final String json = givenAASJson();
 
     // when
-    Optional<String> address = AASParser.getNameplateEndpointForAAS(json, "Festo_3S7PM0CP4BD");
+    Optional<String> address = AAS.getNameplateEndpointForAAS(json, "Festo_3S7PM0CP4BD");
 
     // then
     assertTrue(address.isPresent());

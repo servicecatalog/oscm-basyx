@@ -22,7 +22,7 @@ import java.util.Scanner;
 
 /** @author goebell */
 @Component
-class HTTPConnector {
+public class HTTPConnector {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(HTTPConnector.class);
 
@@ -38,7 +38,7 @@ class HTTPConnector {
     }
   }
 
-  String loadFromURL(String url) throws IOException {
+  public String loadFromURL(String url) throws IOException {
     try (Scanner scanner = new Scanner(getConnectionStream(url), "UTF-8").useDelimiter("\\A")) {
       return scanner.hasNext() ? scanner.next() : "";
     } catch (IOException e) {

@@ -5,10 +5,8 @@
 
  <p>*****************************************************************************
 */
-package org.oscm.basyx.model;
+package org.oscm.basyx.oscmmodel;
 
-/** @author goebel */
-public class Endpoint {
-  public String type;
-  public String address;
+public class TechnicalServices {
+  public String xml;
 }
