@@ -1,5 +1,6 @@
 package org.oscm.basyx.parser;
 
+import com.google.gson.Gson;
 import org.oscm.basyx.oscmmodel.ServiceParameter;
 import org.oscm.basyx.oscmmodel.TechnicalServices;
 import org.w3c.dom.Document;
@@ -15,17 +16,16 @@ import java.util.List;
 import java.util.Optional;
 
 public class TechnicalServiceXML {
-  private Document doc;
-  private Node root;
-  private String xml;
+  private final Node root;
+  private final String xml;
 
   TechnicalServiceXML(String xml) throws ParserConfigurationException, IOException, SAXException {
-    this.doc = XMLHelper.convertToDocument(xml);
+    Document doc = XMLHelper.convertToDocument(xml);
     this.root = doc.getDocumentElement();
     this.xml = xml;
   }
 
-  static TechnicalServiceXML getDefaultServiceTemplate()
+  public static TechnicalServiceXML getDefaultServiceTemplate()
       throws IOException, ParserConfigurationException, SAXException {
     final URL resource =
         TechnicalServiceXML.class.getClassLoader().getResource("TechnicalServiceBooking.xml");
@@ -38,7 +38,7 @@ public class TechnicalServiceXML {
       String src = readFile(xmlFile);
       return new TechnicalServiceXML(src);
     } catch (URISyntaxException e) {
-      throw new IllegalArgumentException("file not found " + resource.toString());
+      throw new IllegalArgumentException("file not found " + resource);
     }
   }
 
@@ -55,7 +55,7 @@ public class TechnicalServiceXML {
     }
   }
 
-  static TechnicalServices update(TechnicalServices ts, List<ServiceParameter> ls, String tsId)
+  public static TechnicalServices update(TechnicalServices ts, List<ServiceParameter> ls, String tsId)
       throws ParserConfigurationException, IOException, SAXException {
     Node tsNode = getTSByIdOrDefault(ts, tsId);
     insert(tsNode, ls);
@@ -69,8 +69,16 @@ public class TechnicalServiceXML {
     TechnicalServiceXML xml = new TechnicalServiceXML(ts.xml);
     Optional<Node> service = xml.get(id);
     if (!service.isPresent()) {
-      service = getDefaultServiceTemplate().get(id);
+      service = getDefaultServiceTemplate().get("Machine_Rental");
+      if (!service.isPresent()) {
+        throw new RuntimeException(
+            String.format("TS mit id=%s not found in default service template!", id));
+      }
+      Element elm = (Element) service.get();
+      XMLHelper.addAttribute(elm, "id", id);
+      return elm;
     }
+
     return service.get();
   }
 
@@ -92,11 +100,12 @@ public class TechnicalServiceXML {
     return XMLHelper.getChildById(root, "tns:TechnicalService", tsID);
   }
 
-  private Node getRoot() {
-    return root;
+  public String getSourceXML() {
+    return xml;
   }
 
-  String getSourceXML() {
-    return xml;
+  public static Optional<TechnicalServices> parseJson(String json) {
+    TechnicalServices rs = new Gson().fromJson(json, TechnicalServices.class);
+    return Optional.ofNullable(rs);
   }
 }

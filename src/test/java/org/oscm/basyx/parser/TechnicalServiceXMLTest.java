@@ -28,7 +28,7 @@ public class TechnicalServiceXMLTest {
 
     // when
     TechnicalServiceXML ts = TechnicalServiceXML.getDefaultServiceTemplate();
-    Optional<Node> node = ts.get("Machine_Rental_v2");
+    Optional<Node> node = ts.get("Machine_Rental");
 
     // then
     assertTrue(node.isPresent(), "Technical Service not found.");

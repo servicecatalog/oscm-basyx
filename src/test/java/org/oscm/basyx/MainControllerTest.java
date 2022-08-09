@@ -14,14 +14,19 @@ import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.oscm.basyx.oscmmodel.TechnicalServices;
+import org.oscm.basyx.parser.TechnicalServiceXML;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 /** @author goebel */
 public class MainControllerTest {
   MainController mainController;
+  HTTPConnector hc = mock(HTTPConnector.class);
   final String AAS_JSON =
       "[{\"modelType\":{\"name\":\"AssetAdministrationShellDescriptor\"},\"idShort\":\"Festo_3S7PM0CP4BD\",\"identification\":{\"idType\":\"IRI\",\"id\":\"smart.festo.com/demo/aas/1/1/454576463545648365874\"},\"endpoints\":[{\"type\":\"http\",\"address\":\"http://estessbesci10:9081/aasServer/shells/smart.festo.com%2Fdemo%2Faas%2F1%2F1%2F454576463545648365874/aas\"}],\"asset\":{\"modelType\":{\"name\":\"Asset\"},\"dataSpecification\":[],\"embeddedDataSpecifications\":[],\"idShort\":\"\",\"identification\":{\"idType\":\"IRDI\",\"id\":\"\"},\"kind\":\"Instance\"},\"submodels\":[{\"modelType\":{\"name\":\"SubmodelDescriptor\"},\"idShort\":\"DeviceDescriptionFiles\",\"identification\":{\"idType\":\"IRI\",\"id\":\"smart.festo.com/demo/sm/instance/1/1/13B7CCD9BF7A3F24\"},\"endpoints\":[{\"type\":\"http\",\"address\":\"http://estessbesci10:9081/aasServer/shells/smart.festo.com%2Fdemo%2Faas%2F1%2F1%2F454576463545648365874/aas/submodels/DeviceDescriptionFiles/submodel\"}],\"semanticId\":{\"keys\":[{\"type\":\"Submodel\",\"local\":false,\"value\":\"http://admin-shell/sample/submodel/type/device-description-files\",\"idType\":\"IRI\"}]}},{\"modelType\":{\"name\":\"SubmodelDescriptor\"},\"idShort\":\"Document\",\"identification\":{\"idType\":\"IRI\",\"id\":\"www.company.com/ids/sm/2543_5072_7091_2660\"},\"endpoints\":[{\"type\":\"http\",\"address\":\"http://estessbesci10:9081/aasServer/shells/smart.festo.com%2Fdemo%2Faas%2F1%2F1%2F454576463545648365874/aas/submodels/Document/submodel\"}],\"semanticId\":{\"keys\":[{\"type\":\"GlobalReference\",\"local\":false,\"value\":\"https://www.hsu-hh.de/aut/aas/document\",\"idType\":\"IRI\"}]}},{\"modelType\":{\"name\":\"SubmodelDescriptor\"},\"idShort\":\"Nameplate\",\"identification\":{\"idType\":\"IRI\",\"id\":\"www.company.com/ids/sm/4343_5072_7091_3242\"},\"endpoints\":[{\"type\":\"http\",\"address\":\"http://estessbesci10:9081/aasServer/shells/smart.festo.com%2Fdemo%2Faas%2F1%2F1%2F454576463545648365874/aas/submodels/Nameplate/submodel\"}],\"semanticId\":{\"keys\":[{\"type\":\"GlobalReference\",\"local\":false,\"value\":\"https://www.hsu-hh.de/aut/aas/nameplate\",\"idType\":\"IRI\"}]}},{\"modelType\":{\"name\":\"SubmodelDescriptor\"},\"idShort\":\"Identification\",\"identification\":{\"idType\":\"IRI\",\"id\":\"www.company.com/ids/sm/6563_5072_7091_4267\"},\"endpoints\":[{\"type\":\"http\",\"address\":\"http://estessbesci10:9081/aasServer/shells/smart.festo.com%2Fdemo%2Faas%2F1%2F1%2F454576463545648365874/aas/submodels/Identification/submodel\"}],\"semanticId\":{\"keys\":[{\"type\":\"GlobalReference\",\"local\":false,\"value\":\"https://www.hsu-hh.de/aut/aas/identification\",\"idType\":\"IRI\"}]}},{\"modelType\":{\"name\":\"SubmodelDescriptor\"},\"idShort\":\"Service\",\"identification\":{\"idType\":\"IRI\",\"id\":\"www.company.com/ids/sm/6053_5072_7091_5102\"},\"endpoints\":[{\"type\":\"http\",\"address\":\"http://estessbesci10:9081/aasServer/shells/smart.festo.com%2Fdemo%2Faas%2F1%2F1%2F454576463545648365874/aas/submodels/Service/submodel\"}],\"semanticId\":{\"keys\":[{\"type\":\"GlobalReference\",\"local\":false,\"value\":\"https://www.hsu-hh.de/aut/aas/service\",\"idType\":\"IRI\"}]}}]}]";
   final String NAMEPLATE_JSON =
@@ -29,7 +34,6 @@ public class MainControllerTest {
 
   @BeforeEach
   public void setup() throws Exception {
-    HTTPConnector hc = mock(HTTPConnector.class);
     doReturn(AAS_JSON).when(hc).loadFromURL(contains("registry"));
     doReturn(NAMEPLATE_JSON).when(hc).loadFromURL(contains("aasServer"));
     mainController = new MainController();
@@ -49,9 +53,11 @@ public class MainControllerTest {
     assertTrue(resp.getBody().contains("Nameplate"));
   }
   
-  
-  //@Test
-  void xml() {
+  @Test
+  void xml() throws Exception {
+
+    TechnicalServices  model = getModel(TechnicalServiceXML.getDefaultServiceTemplate());
+    doReturn(toJson(model)).when(hc).loadFromURL(contains("xml"));
 
     // when
     ResponseEntity<String> resp = mainController.xml("Festo_3S7PM0CP4BD");
@@ -59,6 +65,18 @@ public class MainControllerTest {
     // then
     assertEquals(HttpStatus.OK, resp.getStatusCode());
     System.out.println(resp.getBody());
-    assertTrue(resp.getBody().contains("Nameplate"));
+    assertTrue(resp.getBody().contains("Festo_3S7PM0CP4BD"));
   }
+
+  private String toJson(TechnicalServices services) {
+    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    return gson.toJson(services);
+  }
+
+  TechnicalServices getModel(TechnicalServiceXML ts) {
+    TechnicalServices model = new TechnicalServices();
+    model.xml = ts.getSourceXML();
+    return model;
+  }
+
 }
