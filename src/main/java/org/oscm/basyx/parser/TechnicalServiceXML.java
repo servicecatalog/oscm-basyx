@@ -59,14 +59,13 @@ public class TechnicalServiceXML {
       throws ParserConfigurationException, IOException, SAXException {
     Node tsNode = getTSByIdOrDefault(ts, tsId);
     insert(tsNode, ls);
-    TechnicalServices result = new TechnicalServices();
-    result.xml = XMLHelper.toString(tsNode.getOwnerDocument(), false);
-    return result;
+    final String xml = XMLHelper.toString(tsNode.getOwnerDocument(), false);
+    return TechnicalServices.getFrom(xml);
   }
 
   static Node getTSByIdOrDefault(TechnicalServices ts, String id)
       throws ParserConfigurationException, IOException, SAXException {
-    TechnicalServiceXML xml = new TechnicalServiceXML(ts.xml);
+    TechnicalServiceXML xml = new TechnicalServiceXML(TechnicalServices.asXML(ts));
     Optional<Node> service = xml.get(id);
     if (!service.isPresent()) {
       service = getDefaultServiceTemplate().get("Machine_Rental");

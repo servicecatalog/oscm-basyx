@@ -77,7 +77,13 @@ public class XMLHelper {
       DOMSource domSource = new DOMSource(doc);
 
       transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-      transformer.setOutputProperty("http://www.oracle.com/xml/is-standalone", "yes");
+
+      try {
+        transformer.setOutputProperty("http://www.oracle.com/xml/is-standalone", "yes");
+      } catch (IllegalArgumentException e) {
+        // Might be thrown by JDK versions not implementing the workaround.
+      }
+
       transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
       transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
       transformer.setOutputProperty(OutputKeys.INDENT, "yes");

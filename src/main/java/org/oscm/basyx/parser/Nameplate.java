@@ -36,10 +36,14 @@ public class Nameplate {
     if (!lse.isEmpty()) {
       params =
           lse.stream()
-              .filter(prop -> "String".equalsIgnoreCase(prop.valueType))
+              .filter(prop  -> include(prop))
               .map(prop -> new ServiceParameter(prop))
               .collect(Collectors.toList());
     }
     return Optional.of(params);
+  }
+
+  static boolean  include(SubmodelElement se) {
+    return se.valueType != null && se.valueType.trim().length() > 0;
   }
 }

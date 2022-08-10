@@ -56,8 +56,10 @@ public class MainControllerTest {
   @Test
   void xml() throws Exception {
 
-    TechnicalServices  model = getModel(TechnicalServiceXML.getDefaultServiceTemplate());
-    doReturn(toJson(model)).when(hc).loadFromURL(contains("xml"));
+    final String xml = TechnicalServiceXML.getDefaultServiceTemplate().getSourceXML();
+    String restResponse = toJson(TechnicalServices.getFrom(xml));
+
+    doReturn(restResponse).when(hc).loadFromURL(contains("xml"));
 
     // when
     ResponseEntity<String> resp = mainController.xml("Festo_3S7PM0CP4BD");
@@ -71,12 +73,6 @@ public class MainControllerTest {
   private String toJson(TechnicalServices services) {
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
     return gson.toJson(services);
-  }
-
-  TechnicalServices getModel(TechnicalServiceXML ts) {
-    TechnicalServices model = new TechnicalServices();
-    model.xml = ts.getSourceXML();
-    return model;
   }
 
 }

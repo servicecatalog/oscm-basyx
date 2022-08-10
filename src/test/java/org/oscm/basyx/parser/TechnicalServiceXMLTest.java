@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.oscm.basyx.parser.TechnicalServiceXML.*;
+
 
 public class TechnicalServiceXMLTest {
 
@@ -27,7 +29,7 @@ public class TechnicalServiceXMLTest {
   public void getTSByIdOrDefault() throws IOException, ParserConfigurationException, SAXException {
 
     // when
-    TechnicalServiceXML ts = TechnicalServiceXML.getDefaultServiceTemplate();
+    TechnicalServiceXML ts = getDefaultServiceTemplate();
     Optional<Node> node = ts.get("Machine_Rental");
 
     // then
@@ -39,12 +41,13 @@ public class TechnicalServiceXMLTest {
 
     // given
     List<ServiceParameter> parameters = givenParameters();
-    TechnicalServices ts = new TechnicalServices();
-    ts.xml = TechnicalServiceXML.getDefaultServiceTemplate().getSourceXML();
+    String defaultXML = getDefaultServiceTemplate().getSourceXML();
+    TechnicalServices ts = TechnicalServices.getFrom(defaultXML);
+
 
     // when
     TechnicalServices updated = TechnicalServiceXML.update(ts, parameters, "Machine_Rental_v2");
-    TechnicalServiceXML xml = new TechnicalServiceXML(updated.xml);
+    TechnicalServiceXML xml = new TechnicalServiceXML(TechnicalServices.asXML(updated));
 
     // then
     Optional<Node> tsNode = xml.get("Machine_Rental_v2");

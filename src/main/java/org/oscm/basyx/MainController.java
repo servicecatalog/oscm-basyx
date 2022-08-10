@@ -16,7 +16,6 @@ import org.oscm.basyx.oscmmodel.TechnicalServices;
 import org.oscm.basyx.parser.AAS;
 import org.oscm.basyx.parser.Nameplate;
 import org.oscm.basyx.parser.TechnicalServiceXML;
-import org.oscm.basyx.parser.XMLHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -45,7 +44,6 @@ public class MainController {
 
   @Value("${REST_URL}")
   protected String restUrl;
-
 
   @GetMapping(value = "/json/{aasId}", produces = MediaType.APPLICATION_PROBLEM_JSON_VALUE)
   public ResponseEntity<String> index(@PathVariable String aasId) {
@@ -85,13 +83,15 @@ public class MainController {
       if (npm.isPresent()) {
         Optional<List<ServiceParameter>> parList = Nameplate.parseProperties(npm.get());
         if (parList.isPresent()) {
-          String json = conn.loadFromURL(restUrl + "/technicalservices/xml");
+          String json = conn.loadFromURL(restUrl + "/v1/technicalservices/xml");
 
           Optional<TechnicalServices> ts = TechnicalServiceXML.parseJson(json);
           if (ts.isPresent()) {
-            final TechnicalServices tsList =
+            final TechnicalServices updated =
                 TechnicalServiceXML.update(ts.get(), parList.get(), aasShortId);
-            return ResponseEntity.ok().body(tsList.xml);
+
+            String updatedXML = TechnicalServices.asXML(updated);
+            return ResponseEntity.ok().body(updatedXML);
           }
         }
       }
