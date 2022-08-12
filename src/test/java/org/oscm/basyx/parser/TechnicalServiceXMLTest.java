@@ -20,8 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.oscm.basyx.parser.TechnicalServiceXML.*;
-
+import static org.oscm.basyx.parser.TechnicalServiceXML.getDefaultServiceTemplate;
 
 public class TechnicalServiceXMLTest {
 
@@ -44,7 +43,6 @@ public class TechnicalServiceXMLTest {
     String defaultXML = getDefaultServiceTemplate().getSourceXML();
     TechnicalServices ts = TechnicalServices.getFrom(defaultXML);
 
-
     // when
     TechnicalServices updated = TechnicalServiceXML.update(ts, parameters, "Machine_Rental_v2");
     TechnicalServiceXML xml = new TechnicalServiceXML(TechnicalServices.asXML(updated));
@@ -52,7 +50,7 @@ public class TechnicalServiceXMLTest {
     // then
     Optional<Node> tsNode = xml.get("Machine_Rental_v2");
     assertTrue(tsNode.isPresent(), "Technical Service not found.");
-    List<Node> nodes = XMLHelper.getChildrenByTag(tsNode.get(), "ParameterDefinition");
+    List<Node> nodes = XMLHelper.getElementsByTag(tsNode.get(), "ParameterDefinition");
 
     // then
     assertTrue(

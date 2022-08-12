@@ -25,10 +25,6 @@ import java.util.Optional;
 /** @author goebel */
 public class XMLHelper {
 
-  protected static String getAttributeValue(Node node, String name) {
-    return getAttributeValue(node, name, "");
-  }
-
   public static String getAttributeValue(Node node, String name, String defaultValue) {
     Node attr = node.getAttributes().getNamedItem(name);
     if (attr != null) return attr.getNodeValue();
@@ -45,8 +41,7 @@ public class XMLHelper {
     dfactory.setNamespaceAware(true);
     DocumentBuilder builder = dfactory.newDocumentBuilder();
 
-    Document doc = builder.parse(new InputSource(new StringReader(string)));
-    return doc;
+    return builder.parse(new InputSource(new StringReader(string)));
   }
 
   public static List<Node> getChildrenByTag(Node parent, String tagName) {
@@ -57,7 +52,17 @@ public class XMLHelper {
         children.add(childs.item(j));
       }
     }
+
     return children;
+  }
+
+  public static List<Node> getElementsByTag(Node node, String tagName) {
+    NodeList nl = node.getOwnerDocument().getElementsByTagName("ParameterDefinition");
+    List<Node> result = new ArrayList<>();
+    for (int i = 0; i < nl.getLength(); i++) {
+      result.add(nl.item(i));
+    }
+    return result;
   }
 
   public static Optional<Node> getChildById(Node parent, String tagName, String id) {
@@ -74,7 +79,7 @@ public class XMLHelper {
   public static String toString(Document doc, boolean stripBlanks) {
     try {
       Transformer transformer = TransformerFactory.newInstance().newTransformer();
-      DOMSource domSource = new DOMSource(doc);
+      //DOMSource domSource = new DOMSource(doc);
 
       transformer.setOutputProperty(OutputKeys.METHOD, "xml");
 
@@ -100,8 +105,8 @@ public class XMLHelper {
     }
   }
 
-  public static Element createChild(Node node, String parameterDefinition) {
-    Element elm = node.getOwnerDocument().createElement(parameterDefinition);
+  public static Element createChild(Node node, String name) {
+    Element elm = node.getOwnerDocument().createElement(name);
     node.appendChild(elm);
     return elm;
   }

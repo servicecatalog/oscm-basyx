@@ -82,15 +82,17 @@ public class TechnicalServiceXML {
   }
 
   private static void insert(Node node, List<ServiceParameter> serviceParams) {
-    List<Node> list = XMLHelper.getChildrenByTag(node, "ParameterDefinition");
+    List<Node> list = XMLHelper.getElementsByTag(node, "ParameterDefinition");
     for (ServiceParameter sp : serviceParams) {
 
       if (!XMLHelper.contains(list, "id", sp.name)) {
         Element pmd = XMLHelper.createChild(node, "ParameterDefinition");
         XMLHelper.addAttribute(pmd, "configurable", "true");
-        XMLHelper.addAttribute(pmd, "valueType", "String");
+        XMLHelper.addAttribute(pmd, "valueType", "STRING");
         XMLHelper.addAttribute(pmd, "id", sp.name);
         XMLHelper.addAttribute(pmd, "default", sp.defaultValue);
+        Element ldElm = XMLHelper.createChild(pmd, "LocalizedDescription");
+        XMLHelper.addAttribute(ldElm, "locale", "en");
       }
     }
   }
@@ -104,7 +106,11 @@ public class TechnicalServiceXML {
   }
 
   public static Optional<TechnicalServices> parseJson(String json) {
+    try {
     TechnicalServices rs = new Gson().fromJson(json, TechnicalServices.class);
     return Optional.ofNullable(rs);
+    } catch (Throwable e) {
+      throw new IllegalStateException(json, e);
+    }
   }
 }

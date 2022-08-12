@@ -1,16 +1,16 @@
 /*
-  ******************************************************************************
+ ******************************************************************************
 
-  <p>Copyright FUJITSU LIMITED 2022
+ <p>Copyright FUJITSU LIMITED 2022
 
-  <p>*****************************************************************************
- */
+ <p>*****************************************************************************
+*/
 
 package org.oscm.basyx;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-
+/** Author @goebel */
 public class ServletInitializer extends SpringBootServletInitializer {
 
   @Override
