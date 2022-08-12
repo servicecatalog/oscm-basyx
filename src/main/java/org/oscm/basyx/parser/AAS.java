@@ -1,14 +1,15 @@
 /*
-  ******************************************************************************
+ ******************************************************************************
 
-  <p>Copyright FUJITSU LIMITED 2022
+ <p>Copyright FUJITSU LIMITED 2022
 
-  <p>*****************************************************************************
- */
+ <p>*****************************************************************************
+*/
 
-package org.oscm.basyx;
+package org.oscm.basyx.parser;
 
 import com.google.gson.Gson;
+import org.oscm.basyx.HTTPConnector;
 import org.oscm.basyx.model.Endpoint;
 import org.oscm.basyx.model.Model;
 import org.oscm.basyx.model.NameplateModel;
@@ -20,7 +21,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /** @author goebel */
-public class AASParser {
+public class AAS {
 
   public static Model[] parse(String json) {
     return new Gson().fromJson(json, Model[].class);
@@ -39,9 +40,7 @@ public class AASParser {
   static Optional<String> getNameplateEndpointForAAS(String json, String aasId) {
     final Model[] ms = parse(json);
     List<Model> lm =
-        Arrays.stream(ms)
-            .filter(m -> aasId.equals(m.idShort))
-            .collect(Collectors.toList());
+        Arrays.stream(ms).filter(m -> aasId.equals(m.idShort)).collect(Collectors.toList());
 
     String rs = null;
     if (lm.size() == 1) {
@@ -74,7 +73,7 @@ public class AASParser {
     return getNameplateEndpointForAAS(json, aasId);
   }
 
-  static Optional<NameplateModel> getNameplateModel(HTTPConnector conn, String url, String aasId)
+  public static Optional<NameplateModel> getNameplate(HTTPConnector conn, String url, String aasId)
       throws IOException {
 
     Optional<String> npUrl = getNameplateEndpoint(conn, url, aasId);
