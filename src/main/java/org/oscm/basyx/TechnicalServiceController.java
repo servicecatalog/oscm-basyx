@@ -117,6 +117,24 @@ public class TechnicalServiceController {
     return ResponseEntity.ok().body("Done.");
   }
 
+  @PutMapping (
+          value = "/techservice/xml/{aasId}")
+  public void importTechnicalService(@PathVariable String tsId) {
+    final String[] auth = checkAccess();
+    final String tsIdClear = decode(tsId);
+
+
+    final String tsApiUrl = getApiUrl(auth, "/v1/technicalservices/", tsIdClear);
+
+    try {
+      String json = conn.loadFromURL(tsApiUrl);
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+  }
+
   private String decode(@PathVariable String aasId) {
     try {
       return URLDecoder.decode(aasId, "UTF-8");
@@ -167,13 +185,13 @@ public class TechnicalServiceController {
   }
 
   String buildJsonEmptyTemplate() {
-    return "{ \n"+
-      "\"items\": [\n" +
-      "{\n" +
-      "  \"technicalServiceXml\": \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?><tns:TechnicalServices xmlns:tns=\\\"oscm.serviceprovisioning/1.9/TechnicalService.xsd\\\" xmlns:xsi=\\\"http://www.w3.org/2001/XMLSchema-instance\\\" xsi:schemaLocation=\\\"oscm.serviceprovisioning/1.9/TechnicalService.xsd ../../oscm-serviceprovisioning/javares/TechnicalServices.xsd\\\"></tns:TechnicalServices>\" " +
-      "}\n" +
-    "]\n"+
-   "}";
+    return "{ \n"
+        + "\"items\": [\n"
+        + "{\n"
+        + "  \"technicalServiceXml\": \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?><tns:TechnicalServices xmlns:tns=\\\"oscm.serviceprovisioning/1.9/TechnicalService.xsd\\\" xmlns:xsi=\\\"http://www.w3.org/2001/XMLSchema-instance\\\" xsi:schemaLocation=\\\"oscm.serviceprovisioning/1.9/TechnicalService.xsd ../../oscm-serviceprovisioning/javares/TechnicalServices.xsd\\\"></tns:TechnicalServices>\" "
+        + "}\n"
+        + "]\n"
+        + "}";
   }
 
   boolean is401(String msg) {
@@ -188,18 +206,21 @@ public class TechnicalServiceController {
     return Optional.empty();
   }
 
-  String getApiUrl(String[] auth, String tsId) {
+  String getApiUrl(String[] auth, String path, String tsId) {
     String prefix = String.format("https://%s:%s@", auth[0], auth[1]);
     String baseUrl = restUrl.replaceFirst("https://", prefix);
-    return baseUrl + "/v1/technicalservices/xml/"+ tsId;
+    return baseUrl + path + tsId;
+  }
+
+  String getApiUrl(String[] auth, String tsId) {
+    return getApiUrl(auth, "/v1/technicalservices/xml/", tsId);
   }
 
   private String toJson(TechnicalServices services) {
-    Gson gson =  new GsonBuilder().disableHtmlEscaping().create();
+    Gson gson = new GsonBuilder().disableHtmlEscaping().create();
     String jsonData = gson.toJson(services);
 
     JsonElement jsonElement = new JsonParser().parse(jsonData);
-    String json = gson.toJson(jsonElement);
-    return jsonData;
+    return gson.toJson(jsonElement);
   }
 }
