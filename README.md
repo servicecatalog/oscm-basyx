@@ -5,7 +5,7 @@ The OSCM BaSyx Connector.
 This tool is meant to enhance OSCM for discovering and importing service data privided from asset administration shells.
 
 # Required
-Latest OSCM is up running on your server <OSCM_HOST>(, install dir referred as /docker).
+Latest OSCM is up running on your server <OSCM_HOST> (install dir referred as /docker).
 
 # Prepare
 Install the [Basyx of-the-shelf components](https://wiki.eclipse.org/BaSyx_/_Documentation_/_Components#Off-the-Shelf-Components) Registry and AAS Server on your OSCM docker host.
