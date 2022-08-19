@@ -41,14 +41,14 @@ Clone this repo an import it in your ```<workspace>.```
 2. In Environment variables place the variables as semicolon separated list in form var1=value1;var2=value2; etc.
 3. Run clean and install from the Maven lifecycle tree
 
-#Deploy
+# Deploy
 1. Add the variables in var.env.
 2. Restart OSCM.
 3. Deploy oscm-basyx discovery.
 ```
 docker cp <workspace>/oscm-basyx/target/discovery*.war oscm-app:/opt/apache-tomee/webapps/discovery.war
 ```
-#Usage
+# Usage
 1. Expose the above variables in your shell environement (export ```OSCM_HOST=...```).
 2. Deploy your AAS as aasx file in the registry, therfore place it in /docker/config/basyx/registry.
 3. Ensure it's load with ```http://$AAS_REGISTRY_HOST/registry/api/v1/registry```
