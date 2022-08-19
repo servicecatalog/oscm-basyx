@@ -1,0 +1,156 @@
+ #*****************************************************************************
+ #*                                                                           *
+ #* Copyright FUJITSU LIMITED 2020                                            *
+ #*                                                                           *
+ #* Creation Date: 02-08-2022                                                 *
+ #*                                                                           *
+ #*****************************************************************************
+
+version: "3.8"
+services:
+  oscm-db:
+    image: ${IMAGE_DB}
+    container_name: oscm-db
+    restart: always  
+    env_file: var.env
+    volumes:
+      - ${DOCKER_PATH}/data/oscm-db/data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+  oscm-core:
+    image: ${IMAGE_CORE}
+    container_name: oscm-core
+    restart: always  
+    env_file: var.env
+    environment:
+      - JPDA_ADDRESS=8000
+      - JPDA_TRANSPORT=dt_socket
+    links:
+      - oscm-db:oscm-db
+    volumes:
+      - ${DOCKER_PATH}/config/oscm-core/ssl/privkey:/import/ssl/privkey
+      - ${DOCKER_PATH}/config/oscm-core/ssl/cert:/import/ssl/cert
+      - ${DOCKER_PATH}/config/oscm-core/ssl/chain:/import/ssl/chain
+      - ${DOCKER_PATH}/config/certs:/import/certs
+      - ${DOCKER_PATH}/config/certs/sso:/import/certs/sso
+      - ${DOCKER_PATH}/logs/oscm-core/tomcat:/opt/apache-tomee/logs
+    ports:
+      - 8081:8081
+      - 8000:8000
+
+  oscm-app:
+    image: ${IMAGE_APP}
+    container_name: oscm-app
+    restart: always  
+    env_file: var.env
+    environment:
+      - JPDA_ADDRESS=8000
+      - JPDA_TRANSPORT=dt_socket
+    links:
+      - oscm-db:oscm-db
+    volumes:
+      - ${DOCKER_PATH}/config/oscm-app/ssl/privkey:/import/ssl/privkey
+      - ${DOCKER_PATH}/config/oscm-app/ssl/cert:/import/ssl/cert
+      - ${DOCKER_PATH}/config/oscm-app/ssl/chain:/import/ssl/chain
+      - ${DOCKER_PATH}/config/oscm-app/scripts:/opt/scripts
+      - ${DOCKER_PATH}/config/certs:/import/certs
+      - ${DOCKER_PATH}/logs/oscm-app/tomcat:/opt/apache-tomee/logs
+    ports:
+      - 8881:8881
+      - 8800:8000
+
+  oscm-birt:
+    image: ${IMAGE_BIRT}
+    container_name: oscm-birt
+    restart: always  
+    env_file: var.env
+    volumes:
+      - ${DOCKER_PATH}/config/oscm-birt/ssl/privkey:/import/ssl/privkey
+      - ${DOCKER_PATH}/config/oscm-birt/ssl/cert:/import/ssl/cert
+      - ${DOCKER_PATH}/config/oscm-birt/ssl/chain:/import/ssl/chain
+      - ${DOCKER_PATH}/config/certs:/import/certs
+      - ${DOCKER_PATH}/logs/oscm-birt/tomcat:/var/log/tomcat
+    ports:
+      - 8681:8681
+
+  oscm-branding:
+    image: ${IMAGE_BRANDING}
+    container_name: oscm-branding
+    restart: always  
+    env_file: var.env
+    volumes:
+      - ${DOCKER_PATH}/config/brandings:/import/brandings:rw
+      - ${DOCKER_PATH}/config/oscm-branding/ssl/privkey:/import/ssl/privkey
+      - ${DOCKER_PATH}/config/oscm-branding/ssl/cert:/import/ssl/cert
+      - ${DOCKER_PATH}/config/oscm-branding/ssl/chain:/import/ssl/chain
+      - ${DOCKER_PATH}/config/certs:/import/certs
+    ports:
+      - 8443:443
+
+  oscm-identity:
+    image: ${IMAGE_IDENTITY}
+    container_name: oscm-identity
+    restart: always  
+    env_file: var.env
+    environment:
+      - JPDA_ADDRESS=9000
+      - JPDA_TRANSPORT=dt_socket
+    volumes:
+      - ${DOCKER_PATH}/config/oscm-identity/tenants:/opt/identity/config/tenants
+      - ${DOCKER_PATH}/config/oscm-identity/ssl/privkey:/import/ssl/privkey
+      - ${DOCKER_PATH}/config/oscm-identity/ssl/cert:/import/ssl/cert
+      - ${DOCKER_PATH}/config/oscm-identity/ssl/chain:/import/ssl/chain
+      - ${DOCKER_PATH}/config/certs:/import/certs
+    ports:
+      - 9091:9091
+      - 9090:9090
+      - 9000:9000
+
+  oscm-help:
+    image: ${IMAGE_HELP}
+    container_name: oscm-help
+    restart: always  
+    ports:
+      - 8543:443
+
+  aasServer:
+    image: eclipsebasyx/aas-server:1.1.0
+    container_name: aasServer
+    restart: always
+    volumes:
+      - ${DOCKER_PATH}/config/basyx/aasServer:/usr/share/config  
+    ports:
+      - 9081:4001
+  
+  aasRegistry:
+    image: eclipsebasyx/aas-registry:1.1.0
+    container_name: registry 
+    restart: always
+    volumes:
+      - ${DOCKER_PATH}/config/basyx/registry:/usr/share/config  
+    ports: 
+      - 9082:4000
+  
+  oscm-mail:
+    image: ${IMAGE_MAIL}
+    container_name: oscm-mail
+    env_file: var.env
+    environment:
+      - JPDA_ADDRESS=8500
+      - JPDA_TRANSPORT=dt_socket
+    volumes:
+      - ${DOCKER_PATH}/config/oscm-mail/ssl/privkey:/import/ssl/privkey
+      - ${DOCKER_PATH}/config/oscm-mail/ssl/cert:/import/ssl/cert
+      - ${DOCKER_PATH}/config/oscm-mail/ssl/chain:/import/ssl/chain
+      - ${DOCKER_PATH}/config/certs:/import/certs
+    ports:
+      - 8581:8581
+      - 8500:8500
+
+  oscm-maildev:
+     image: ${IMAGE_MAILDEV} 
+     container_name: oscm-maildev
+     restart: always
+     ports:
+         - 8082:1080
