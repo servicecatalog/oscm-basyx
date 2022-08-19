@@ -27,8 +27,8 @@ API_PASS=<OSCM password>
 ```
 Add the variables in /docker/var.env
 
-## Build from Source
-Clone this repo an import it in your ```<workspace>.```
+## Building from Source
+Clone this repo and import it in your ```<workspace>.```
 
 ### Eclipse
 1. Select Run->Run Configurations...
