@@ -30,16 +30,16 @@ Add the variables in /docker/var.env
 # Build from Source
 Clone this repo an import it in your ```<workspace>.```
 
-##Intellij
-1. Enter Settings CTRL+ALT+S, search and select "Maven Runner"
-2. In Environment variables place the variables as semicolon separated list in form var1=value1;var2=value2; etc.
-3. Run clean and install from the Maven lifecycle tree
-
-##Eclipse
+## Eclipse
 1. Select Run->Run Configurations...
 2. Create Maven Build configuration, enter Goals: clean install
 3. On the Environment tab add the variables above and
 4. Select run.
+
+## IntelliJ
+1. Enter Settings CTRL+ALT+S, search and select "Maven Runner"
+2. In Environment variables place the variables as semicolon separated list in form var1=value1;var2=value2; etc.
+3. Run clean and install from the Maven lifecycle tree
 
 #Deploy
 1. Add the variables in var.env.
