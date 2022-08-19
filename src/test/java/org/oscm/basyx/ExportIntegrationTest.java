@@ -15,8 +15,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ExportIntegrationTest {
@@ -29,7 +28,7 @@ public class ExportIntegrationTest {
   public void get_shouldFailWith401() throws Exception {
     ResponseEntity<String> result =
         template.getForEntity("/techservice/xml/Festo_3S7PM0CP4BD", String.class);
-      assertUnauthorizedUserGets401(result);
+    assertUnauthorizedUserGets401(result);
   }
 
   @Test
@@ -50,7 +49,25 @@ public class ExportIntegrationTest {
 
     // then
     assertUnauthorizedUserGets401(restEndpoint, response);
-    assertAuthorizedUserGets200(restEndpoint, response);
+    assertAuthorizedUserGets200(response);
+  }
+
+  @Test
+  public void getTechnicalServiceKey() {
+    // given
+    String user = env.getProperty("API_USER_KEY", "1234");
+    String passwd = env.getProperty("API_PASS", "secret");
+    String restUrl = env.getProperty("REST_URL", "https://myoscmserver/oscm-rest-api");
+
+
+    // when
+    ResponseEntity<String> response =
+        template
+            .withBasicAuth(user, passwd)
+            .getForEntity("/techservice/id/Festo_3S7PM0CP4BD", String.class);
+
+    // then
+   // assertAuthorizedUserGets200(response);
   }
 
   private void assertUnauthorizedUserGets401(String xmlUrl, ResponseEntity<String> response) {
@@ -63,16 +80,17 @@ public class ExportIntegrationTest {
   }
 
   private void assertUnauthorizedUserGets401(ResponseEntity<String> response) {
-        boolean unAuthorized = env.getProperty("API_USER_KEY", "1234").equals("1234");
-        if (unAuthorized) {
-            assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode(), response.getBody());
-        }
+    boolean unAuthorized = env.getProperty("API_USER_KEY", "1234").equals("1234");
+    if (unAuthorized) {
+      assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode(), response.getBody());
     }
+  }
 
-  private void assertAuthorizedUserGets200(String xmlUrl, ResponseEntity<String> response) {
+  private void assertAuthorizedUserGets200(ResponseEntity<String> response) {
     boolean isUserSet = !env.getProperty("API_USER_KEY", "1234").equals("1234");
     if (isUserSet) {
       assertEquals(HttpStatus.OK, response.getStatusCode(), response.getBody());
+      assertNotNull(response.getBody());
     }
   }
 

@@ -16,6 +16,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.ssl.SSLContextBuilder;
+import org.oscm.basyx.Exceptions.InternalError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -26,6 +27,8 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
+
+import static org.oscm.basyx.Exceptions.InternalError;
 
 /** @author goebell */
 @Component
@@ -41,7 +44,8 @@ public class HTTPConnector {
                   new SSLContextBuilder()
                       .loadTrustMaterial(null, TrustAllStrategy.INSTANCE)
                       .build())
-              .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE).setRedirectStrategy(new LaxRedirectStrategy())
+              .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+              .setRedirectStrategy(new LaxRedirectStrategy())
               .build();
       HttpGet httpGet = new HttpGet(url);
       HttpResponse httpResponse = httpClient.execute(httpGet);
@@ -50,17 +54,17 @@ public class HTTPConnector {
       LOGGER.error("Failed to open connection stream to resource: " + url);
       throw new IOException(e);
     } catch (NoSuchAlgorithmException | KeyStoreException e) {
-      LOGGER.error("Failed to mock SSL validation before opening connection : " + url );
-      throw new RuntimeException( "Failed to mock SSL validation before opening connection.", e);
+      LOGGER.error("Failed to mock SSL validation before opening connection : " + url);
+      throw new RuntimeException("Failed to mock SSL validation before opening connection.", e);
     }
   }
 
-  public String loadFromURL(String url) throws IOException {
+  public String loadFromURL(String url) throws InternalError {
     try (Scanner scanner = new Scanner(getConnectionStream(url), "UTF-8").useDelimiter("\\A")) {
       return scanner.hasNext() ? scanner.next() : "";
     } catch (IOException e) {
       LOGGER.error("Failed to download content file " + url + " " + e);
-      throw e;
+      throw InternalError(e);
     }
   }
 }

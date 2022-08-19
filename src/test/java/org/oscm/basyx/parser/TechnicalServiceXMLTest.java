@@ -10,7 +10,9 @@ package org.oscm.basyx.parser;
 import org.junit.jupiter.api.Test;
 import org.oscm.basyx.model.NameplateModel;
 import org.oscm.basyx.oscmmodel.ServiceParameter;
-import org.oscm.basyx.oscmmodel.TechnicalServices;
+import org.oscm.basyx.oscmmodel.TechnicalServicesXMLMapper;
+import org.springframework.context.event.EventListenerMethodProcessor;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
@@ -41,16 +43,16 @@ public class TechnicalServiceXMLTest {
     // given
     List<ServiceParameter> parameters = givenParameters();
     String defaultXML = getDefaultServiceTemplate().getSourceXML();
-    TechnicalServices ts = TechnicalServices.getFrom(defaultXML);
+    TechnicalServicesXMLMapper ts = TechnicalServicesXMLMapper.getFrom(defaultXML);
 
     // when
-    TechnicalServices updated = TechnicalServiceXML.update(ts, parameters, "Machine_Rental_v2");
-    TechnicalServiceXML xml = new TechnicalServiceXML(TechnicalServices.asXML(updated));
+    TechnicalServicesXMLMapper updated = TechnicalServiceXML.update(ts, parameters, "Machine_Rental_v2");
+    TechnicalServiceXML xml = new TechnicalServiceXML(TechnicalServicesXMLMapper.asXML(updated));
 
     // then
     Optional<Node> tsNode = xml.get("Machine_Rental_v2");
     assertTrue(tsNode.isPresent(), "Technical Service not found.");
-    List<Node> nodes = XMLHelper.getElementsByTag(tsNode.get(), "ParameterDefinition");
+    List<Element> nodes = XMLHelper.getElementsByTag(tsNode.get(), "ParameterDefinition");
 
     // then
     assertTrue(

@@ -46,7 +46,7 @@ public class XMLHelper {
 
   public static List<Node> getChildrenByTag(Node parent, String tagName) {
     NodeList childs = parent.getChildNodes();
-    List<Node> children = new ArrayList<Node>();
+    List<Node> children = new ArrayList<>();
     for (int j = 0; j < childs.getLength(); j++) {
       if (tagName.equals(childs.item(j).getNodeName())) {
         children.add(childs.item(j));
@@ -56,11 +56,11 @@ public class XMLHelper {
     return children;
   }
 
-  public static List<Node> getElementsByTag(Node node, String tagName) {
-    NodeList nl = node.getOwnerDocument().getElementsByTagName("ParameterDefinition");
-    List<Node> result = new ArrayList<>();
+  public static List<Element> getElementsByTag(Node node, String tagName) {
+    NodeList nl = node.getOwnerDocument().getElementsByTagName(tagName);
+    List<Element> result = new ArrayList<>();
     for (int i = 0; i < nl.getLength(); i++) {
-      result.add(nl.item(i));
+      result.add((Element) nl.item(i));
     }
     return result;
   }
@@ -79,7 +79,7 @@ public class XMLHelper {
   public static String toString(Document doc, boolean stripBlanks) {
     try {
       Transformer transformer = TransformerFactory.newInstance().newTransformer();
-      //DOMSource domSource = new DOMSource(doc);
+      // DOMSource domSource = new DOMSource(doc);
 
       transformer.setOutputProperty(OutputKeys.METHOD, "xml");
 
@@ -107,7 +107,23 @@ public class XMLHelper {
 
   public static Element createChild(Node node, String name) {
     Element elm = node.getOwnerDocument().createElement(name);
-    node.appendChild(elm);
+    Node firstNode = null;
+    // Find existing child
+    NodeList nl = node.getChildNodes();
+    for (int i = 0; i < nl.getLength(); i++) {
+      Node child = nl.item(i);
+      if (child instanceof Element) {
+        String aTag = ((Element) child).getTagName();
+        if (aTag.equals(name)) {
+          firstNode = child;
+        }
+      }
+    }
+    if (firstNode != null) {
+      elm = (Element) node.insertBefore(elm, firstNode);
+    } else {
+      elm = (Element) node.appendChild(elm);
+    }
     return elm;
   }
 
@@ -115,11 +131,11 @@ public class XMLHelper {
     pmd.setAttribute(name, val);
   }
 
-  public static boolean contains(List<Node> list, String name, String val) {
-    for (Node n : list) {
-      String id = ((Element) n).getAttribute("id");
+  public static boolean contains(List<Element> list, String name, String val) {
+    for (Element n : list) {
+      String id = n.getAttribute("id");
       if (!id.equals(name)) continue;
-      String aDefault = ((Element) n).getAttribute("default");
+      String aDefault = n.getAttribute("default");
       if (val.equals(aDefault)) return true;
     }
     return false;

@@ -21,23 +21,21 @@ import java.util.stream.Collectors;
 /** @author goebel */
 public class Nameplate {
   static Optional<NameplateModel> parseNameplate(String json) {
-    NameplateModel rs = null;
-
-    rs = new Gson().fromJson(json, NameplateModel.class);
+    NameplateModel rs = new Gson().fromJson(json, NameplateModel.class);
 
     return Optional.ofNullable(rs);
   }
 
   public static Optional<List<ServiceParameter>> parseProperties(NameplateModel npm) {
 
-    List<ServiceParameter> params = new ArrayList<ServiceParameter>();
+    List<ServiceParameter> params = new ArrayList<>();
 
     List<SubmodelElement> lse = Submodel.readProperties(npm);
     if (!lse.isEmpty()) {
       params =
           lse.stream()
-              .filter(prop  -> include(prop))
-              .map(prop -> new ServiceParameter(prop))
+              .filter(Nameplate::include)
+              .map(ServiceParameter::new)
               .collect(Collectors.toList());
     }
     return Optional.of(params);

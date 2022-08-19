@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class Submodel {
 
   static List<SubmodelElement> readProperties(NameplateModel npm) {
-    return Arrays.asList(npm.submodelElements).stream()
+    return Arrays.stream(npm.submodelElements)
         .filter(sm -> "PARAMETER".equalsIgnoreCase(sm.category))
         .collect(Collectors.toList());
   }
