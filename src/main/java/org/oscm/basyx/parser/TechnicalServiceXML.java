@@ -2,7 +2,7 @@ package org.oscm.basyx.parser;
 
 import com.google.gson.Gson;
 import org.oscm.basyx.oscmmodel.ServiceParameter;
-import org.oscm.basyx.oscmmodel.TechnicalServices;
+import org.oscm.basyx.oscmmodel.TechnicalServicesXMLMapper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -55,17 +55,17 @@ public class TechnicalServiceXML {
     }
   }
 
-  public static TechnicalServices update(TechnicalServices ts, List<ServiceParameter> ls, String tsId)
+  public static TechnicalServicesXMLMapper update(TechnicalServicesXMLMapper ts, List<ServiceParameter> ls, String tsId)
       throws ParserConfigurationException, IOException, SAXException {
     Node tsNode = getTSByIdOrDefault(ts, tsId);
     insert(tsNode, ls);
     final String xml = XMLHelper.toString(tsNode.getOwnerDocument(), false);
-    return TechnicalServices.getFrom(xml);
+    return TechnicalServicesXMLMapper.getFrom(xml);
   }
 
-  static Node getTSByIdOrDefault(TechnicalServices ts, String id)
+  static Node getTSByIdOrDefault(TechnicalServicesXMLMapper ts, String id)
       throws ParserConfigurationException, IOException, SAXException {
-    TechnicalServiceXML xml = new TechnicalServiceXML(TechnicalServices.asXML(ts));
+    TechnicalServiceXML xml = new TechnicalServiceXML(TechnicalServicesXMLMapper.asXML(ts));
     Optional<Node> service = xml.get(id);
     if (!service.isPresent()) {
       service = getDefaultServiceTemplate().get("Machine_Rental");
@@ -82,9 +82,9 @@ public class TechnicalServiceXML {
   }
 
   private static void insert(Node node, List<ServiceParameter> serviceParams) {
-    List<Node> list = XMLHelper.getElementsByTag(node, "ParameterDefinition");
-    for (ServiceParameter sp : serviceParams) {
+    List<Element> list = XMLHelper.getElementsByTag(node, "ParameterDefinition");
 
+    for (ServiceParameter sp : serviceParams) {
       if (!XMLHelper.contains(list, "id", sp.name)) {
         Element pmd = XMLHelper.createChild(node, "ParameterDefinition");
         XMLHelper.addAttribute(pmd, "configurable", "true");
@@ -105,9 +105,9 @@ public class TechnicalServiceXML {
     return xml;
   }
 
-  public static Optional<TechnicalServices> parseJson(String json) {
+  public static Optional<TechnicalServicesXMLMapper> parseJson(String json) {
     try {
-    TechnicalServices rs = new Gson().fromJson(json, TechnicalServices.class);
+    TechnicalServicesXMLMapper rs = new Gson().fromJson(json, TechnicalServicesXMLMapper.class);
     return Optional.ofNullable(rs);
     } catch (Throwable e) {
       throw new IllegalStateException(json, e);

@@ -8,16 +8,14 @@
 
 package org.oscm.basyx;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import org.oscm.basyx.model.NameplateModel;
 import org.oscm.basyx.oscmmodel.ServiceParameter;
-import org.oscm.basyx.oscmmodel.TechnicalServices;
+import org.oscm.basyx.oscmmodel.TechnicalServicesMapper;
+import org.oscm.basyx.oscmmodel.TechnicalServicesXMLMapper;
 import org.oscm.basyx.parser.AAS;
 import org.oscm.basyx.parser.Nameplate;
 import org.oscm.basyx.parser.TechnicalServiceXML;
+import org.oscm.basyx.parser.TechnicalServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -25,7 +23,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.thymeleaf.util.StringUtils;
 import org.xml.sax.SAXException;
 
@@ -53,6 +50,8 @@ public class TechnicalServiceController {
   @Value("${REST_URL}")
   protected String restUrl;
 
+  static final String XML_API_URI = "/v1/technicalservices/xml/";
+
   @GetMapping(
       value = "/techservice/json/{aasId}",
       produces = MediaType.APPLICATION_PROBLEM_JSON_VALUE)
@@ -61,28 +60,25 @@ public class TechnicalServiceController {
       final String[] auth = checkAccess();
       final String aasShortId = decode(aasId);
 
-      try {
-        NameplateModel npm = getNameplateModel(aasShortId);
-        Optional<List<ServiceParameter>> parList = Nameplate.parseProperties(npm);
-        if (parList.isPresent()) {
-          final String tsApiUrl = getApiUrl(auth, aasShortId);
-          Optional<String> updatedXML = buildTechnicalServices(aasShortId, parList.get(), tsApiUrl);
+      NameplateModel npm = getNameplateModel(aasShortId);
+      Optional<List<ServiceParameter>> parList = Nameplate.parseProperties(npm);
+      if (parList.isPresent()) {
+        final String tsApiUrl = getApiUrl(auth);
+        Optional<String> updatedXML = buildTechnicalServices(aasShortId, parList.get(), tsApiUrl);
 
-          if (updatedXML.isPresent()) {
-            final String json = toJson(TechnicalServices.getFrom(updatedXML.get()));
-            return ResponseEntity.ok().body(json);
-          }
-          throw NotFound(String.format("Got nothing from :\n %s", tsApiUrl));
+        if (updatedXML.isPresent()) {
+          TechnicalServicesXMLMapper servicesList =
+              TechnicalServicesXMLMapper.getFrom(updatedXML.get());
+          final String json = TechnicalServicesXMLMapper.toJson(servicesList);
+          return ResponseEntity.ok().body(json);
         }
-
-      } catch (NotFound | AccessDenied ade) {
-        return asResponseEntity(ade);
-      } catch (IOException | ParserConfigurationException | SAXException e) {
-        throw InternalError(e);
+        throw NotFound(String.format("Got nothing from :\n %s", XML_API_URI));
       }
-    } catch (InternalError e) {
-      return asResponseEntity(e);
+
+    } catch (NotFound | AccessDenied | InternalError ade) {
+      return asResponseEntity(ade);
     }
+
     return ResponseEntity.ok().body("Done.");
   }
 
@@ -94,45 +90,48 @@ public class TechnicalServiceController {
       final String[] auth = checkAccess();
       final String aasShortId = decode(aasId);
 
-      try {
-        NameplateModel npm = getNameplateModel(aasShortId);
-        Optional<List<ServiceParameter>> parList = Nameplate.parseProperties(npm);
-        if (parList.isPresent()) {
-          final String tsApiUrl = getApiUrl(auth, aasShortId);
-          Optional<String> updatedXML = buildTechnicalServices(aasShortId, parList.get(), tsApiUrl);
-          if (updatedXML.isPresent()) {
-            return ResponseEntity.ok().body(updatedXML.get());
-          }
-          throw NotFound(String.format("Got nothing from :\n %s", tsApiUrl));
+      NameplateModel npm = getNameplateModel(aasShortId);
+      Optional<List<ServiceParameter>> parList = Nameplate.parseProperties(npm);
+      if (parList.isPresent()) {
+        final String tsApiUrl = getApiUrl(auth);
+        Optional<String> updatedXML = buildTechnicalServices(aasShortId, parList.get(), tsApiUrl);
+        if (updatedXML.isPresent()) {
+          return ResponseEntity.ok().body(updatedXML.get());
         }
-
-      } catch (NotFound | AccessDenied ade) {
-        return Exceptions.asResponseEntity(ade);
-      } catch (IOException | ParserConfigurationException | SAXException e) {
-        throw InternalError(e);
+        throw NotFound(String.format("Got nothing from :\n %s", XML_API_URI));
       }
-    } catch (InternalError e) {
-      return asResponseEntity(e);
+
+    } catch (NotFound | AccessDenied | InternalError ade) {
+      return asResponseEntity(ade);
     }
+
     return ResponseEntity.ok().body("Done.");
   }
 
-  @PutMapping (
-          value = "/techservice/xml/{aasId}")
-  public void importTechnicalService(@PathVariable String tsId) {
+  @GetMapping(value = "/techservice/id/{tsId}", produces = MediaType.APPLICATION_PROBLEM_JSON_VALUE)
+  public ResponseEntity<String> getTechnicalServiceKey(@PathVariable String tsId) {
     final String[] auth = checkAccess();
     final String tsIdClear = decode(tsId);
 
-
-    final String tsApiUrl = getApiUrl(auth, "/v1/technicalservices/", tsIdClear);
+    final String tsApiUrl = getApiUrl(auth, "/v1/technicalservices/");
 
     try {
       String json = conn.loadFromURL(tsApiUrl);
 
-    } catch (IOException e) {
-      e.printStackTrace();
+      if (is401(json)) {
+        throw AccessDenied("Authentication failed for " + "/v1/technicalservices/");
+      }
+      Optional<TechnicalServicesMapper> tsMap = TechnicalServices.parseJson(json);
+      if (tsMap.isPresent()) {
+        Optional<Long> ts = tsMap.get().getIdByTsName(tsIdClear);
+        if (ts.isPresent()) {
+          return ResponseEntity.ok().body(String.valueOf(ts.get()));
+        }
+      }
+      throw NotFound(String.format("Got nothing from :\n %s", "/v1/technicalservices/"));
+    } catch (NotFound | AccessDenied | InternalError ade) {
+      return asResponseEntity(ade);
     }
-
   }
 
   private String decode(@PathVariable String aasId) {
@@ -163,8 +162,7 @@ public class TechnicalServiceController {
   }
 
   private Optional<String> buildTechnicalServices(
-      String aasShortId, List<ServiceParameter> parList, String tsApiUrl)
-      throws IOException, ParserConfigurationException, SAXException {
+      String aasShortId, List<ServiceParameter> parList, String tsApiUrl) {
 
     String json = conn.loadFromURL(tsApiUrl);
 
@@ -173,13 +171,18 @@ public class TechnicalServiceController {
     }
 
     if (is401(json)) {
-      throw AccessDenied("Authentication failed for " + tsApiUrl);
+      throw AccessDenied("Authentication failed for OSCM API endpoint " + XML_API_URI);
     }
 
-    Optional<TechnicalServices> ts = TechnicalServiceXML.parseJson(json);
+    Optional<TechnicalServicesXMLMapper> ts = TechnicalServiceXML.parseJson(json);
     if (ts.isPresent()) {
-      final TechnicalServices updated = TechnicalServiceXML.update(ts.get(), parList, aasShortId);
-      return Optional.of(TechnicalServices.asXML(updated));
+      try {
+        final TechnicalServicesXMLMapper updated =
+            TechnicalServiceXML.update(ts.get(), parList, aasShortId);
+        return Optional.of(TechnicalServicesXMLMapper.asXML(updated));
+      } catch (IOException | SAXException | ParserConfigurationException e) {
+        throw InternalError(e);
+      }
     }
     return Optional.empty();
   }
@@ -206,21 +209,13 @@ public class TechnicalServiceController {
     return Optional.empty();
   }
 
-  String getApiUrl(String[] auth, String path, String tsId) {
+  String getApiUrl(String[] auth, String path) {
     String prefix = String.format("https://%s:%s@", auth[0], auth[1]);
     String baseUrl = restUrl.replaceFirst("https://", prefix);
-    return baseUrl + path + tsId;
+    return baseUrl + path;
   }
 
-  String getApiUrl(String[] auth, String tsId) {
-    return getApiUrl(auth, "/v1/technicalservices/xml/", tsId);
-  }
-
-  private String toJson(TechnicalServices services) {
-    Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-    String jsonData = gson.toJson(services);
-
-    JsonElement jsonElement = new JsonParser().parse(jsonData);
-    return gson.toJson(jsonElement);
+  String getApiUrl(String[] auth) {
+    return getApiUrl(auth, XML_API_URI);
   }
 }

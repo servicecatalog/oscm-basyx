@@ -34,13 +34,16 @@ public class Exceptions {
     try {
       Field field = error.getClass().getDeclaredField("HTTP_STATUS");
       field.setAccessible(true);
-      HttpStatus status = (HttpStatus) field.get(error);
-      return new ResponseEntity<>(error.getMessage(), new HttpHeaders(), status);
+
+      return new ResponseEntity<>(
+          String.format("{\"errorMsg\":\"%s\"}", error.getMessage()),
+          new HttpHeaders(),
+          (HttpStatus) field.get(error));
     } catch (IllegalAccessException | NoSuchFieldException e) {
       e.printStackTrace();
     }
     return new ResponseEntity<>(
-            error.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+        error.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   static class NotFound extends RuntimeException {

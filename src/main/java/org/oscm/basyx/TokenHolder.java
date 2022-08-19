@@ -9,7 +9,7 @@ package org.oscm.basyx;
 
 /** Author @goebel */
 class TokenHolder {
-  private static ThreadLocal<String> store = new ThreadLocal<String>();
+  private static final ThreadLocal<String> store = new ThreadLocal<>();
 
   static String get() {
     return store.get();
