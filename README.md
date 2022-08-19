@@ -51,5 +51,5 @@ docker cp <workspace>/oscm-basyx/target/discovery*.war oscm-app:/opt/apache-tome
 # Usage
 1. Expose the above variables in your shell environement (export ```OSCM_HOST=...```).
 2. Deploy your AAS as aasx file in the registry, therfore place it in /docker/config/basyx/registry.
-3. Ensure it's load with ```http://$AAS_REGISTRY_HOST/registry/api/v1/registry```
-4. Run import.sh <TS_ID>
+3. Ensure it loads with ```http://$AAS_REGISTRY_HOST/registry/api/v1/registry```
+4. Run ```import.sh <TS_ID>```
