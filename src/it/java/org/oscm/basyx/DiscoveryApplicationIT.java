@@ -14,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @Tag("IntegrationTest")
 @SpringBootTest
-class DiscoveryApplicationTests {
+class DiscoveryApplicationIT {
 
   @Test
   void contextLoads() {}

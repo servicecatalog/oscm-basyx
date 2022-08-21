@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Tag("IntegrationTest")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ExportIntegrationTest {
+public class ExportIT {
 
   @Autowired private TestRestTemplate template;
 
