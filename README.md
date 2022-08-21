@@ -8,14 +8,14 @@ This tool is meant to enhance OSCM for discovering and importing service data pr
 Latest OSCM is up running on your server <OSCM_HOST> (install dir referred as /docker). Read [this Readme](https://github.com/servicecatalog/oscm-dockerbuild#quick-start-oscm-with-docker) on how to setup OSCM.
 
 ## Prepare
-Install the [Basyx of-the-shelf components](https://wiki.eclipse.org/BaSyx_/_Documentation_/_Components#Off-the-Shelf-Components) Registry and AAS Server on your OSCM docker host.
+Install the [Basyx off-the-shelf components](https://wiki.eclipse.org/BaSyx_/_Documentation_/_Components#Off-the-Shelf-Components) Registry and AAS Server on your OSCM docker host.
 Create the configuation under /docker/config/basyx/aasServer and /docker/config/basyx/registry.
 
-The scripts contained in oscm-scripts shall help you to integrate the two services in your OSCM docker network.
+The scripts contained the in oscm-scripts directory shall help you to integrate the two services in your OSCM docker network.
 Ensure the volume mounts are satisfied in the yaml file and copy all into your /docker directory, where OSCM is installed.
 
 ## Environment
-following environment variables are required.
+Following environment variables are required.
 
 ``` 
 OSCM_HOST=<fully qualified named of your OSCM server>
