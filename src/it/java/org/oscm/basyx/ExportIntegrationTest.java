@@ -7,6 +7,8 @@
 */
 package org.oscm.basyx;
 
+
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Tag("IntegrationTest")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ExportIntegrationTest {
 
@@ -67,7 +70,7 @@ public class ExportIntegrationTest {
             .getForEntity("/techservice/id/Festo_3S7PM0CP4BD", String.class);
 
     // then
-   // assertAuthorizedUserGets200(response);
+    assertAuthorizedUserGets200(response);
   }
 
   private void assertUnauthorizedUserGets401(String xmlUrl, ResponseEntity<String> response) {
