@@ -39,17 +39,20 @@ public class AAS {
 
   static Optional<String> getNameplateEndpointForAAS(String json, String aasId) {
     final Model[] ms = parse(json);
-    List<Model> lm =
-        Arrays.stream(ms).filter(m -> aasId.equals(m.idShort)).collect(Collectors.toList());
-
     String rs = null;
-    if (lm.size() == 1) {
-      Model[] sm = lm.get(0).submodels;
-      Optional<Model> npm = findNameplateFromModels(sm);
-      if (npm.isPresent()) {
-        Endpoint[] eps = npm.get().endpoints;
-        if (eps.length > 0) {
-          rs = eps[0].address;
+    if (ms != null) {
+      List<Model> lm =
+          Arrays.stream(ms).filter(m -> aasId.equals(m.idShort)).collect(Collectors.toList());
+
+
+      if (lm.size() == 1) {
+        Model[] sm = lm.get(0).submodels;
+        Optional<Model> npm = findNameplateFromModels(sm);
+        if (npm.isPresent()) {
+          Endpoint[] eps = npm.get().endpoints;
+          if (eps.length > 0) {
+            rs = eps[0].address;
+          }
         }
       }
     }
