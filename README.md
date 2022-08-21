@@ -28,13 +28,13 @@ Clone this repo and import it in your ```<workspace>.```
 
 ### Eclipse
 1. From the Eclipse menu choose *Run->Run Configurations...*
-2. Create Maven Build configuration, enter Goals: clean install.
+2. Create Maven Build configuration, enter Goals: *clean install*.
 3. On the tab *Environment* add the variables above and press *Run*.
 
 ### IntelliJ
 1. Enter Settings CTRL+ALT+S, search and select "Maven Runner".
 2. In the field *Environment variables*, place the above variables as semicolon separated list in form var1=value1;var2=value2; etc.
-3. Open the Maven Tool window and run clean and install from the Maven lifecycle tree.
+3. Open the Maven Tool window and run *clean* and *install* from the Maven lifecycle tree.
 
 ## Deploy
 1. Add the variables in var.env.
