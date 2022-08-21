@@ -9,10 +9,9 @@ Latest OSCM is up running on your server <OSCM_HOST> (install dir referred as /d
 
 ## Prepare
 Install the [Basyx off-the-shelf components](https://wiki.eclipse.org/BaSyx_/_Documentation_/_Components#Off-the-Shelf-Components) Registry and AAS Server on your OSCM docker host.
-Create the configuation under /docker/config/basyx/aasServer and /docker/config/basyx/registry.
+Create the configuration under /docker/config/basyx/aasServer and /docker/config/basyx/registry.
 
-The scripts contained the in oscm-scripts directory shall help you to integrate the two services in your OSCM docker network.
-Ensure the volume mounts are satisfied in the yaml file and copy all into your /docker directory, where OSCM is installed.
+The scripts contained in the oscm-scripts directory shall help you integrating the two services in your OSCM docker network. Ensure the volume mounts in the docker-compose yaml file are satisfied and copy all into your /docker directory, where OSCM is installed.
 
 ## Environment
 Following environment variables are required.
@@ -49,7 +48,7 @@ Clone this repo and import it in your ```<workspace>.```
 docker cp <workspace>/oscm-basyx/target/discovery*.war oscm-app:/opt/apache-tomee/webapps/discovery.war
 ```
 ## Usage
-1. Expose the above variables in your shell environement (export ```OSCM_HOST=...```).
+1. Expose the above variables in your shell environement (export ```OSCM_HOST=...``` etc.).
 2. Deploy your AAS as aasx file in the registry, therfore place it in /docker/config/basyx/registry.
 3. Ensure it loads with ```http://$AAS_REGISTRY_HOST/registry/api/v1/registry```
 4. Run ```import.sh <TS_ID>```
