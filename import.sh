@@ -37,6 +37,6 @@ curl -ku "$USER:$PASS" -X PUT "https://$OSCM_HOST:8081/oscm-rest-api/v1/technica
 
 TS_KEY=$(curl -ku "$USER:$PASS" -X GET "https://$OSCM_HOST:8881/discovery/techservice/id/$TSID" -H "accept: application/problem+json")
 
-rm /tmp/new_service.json
+rm -f /tmp/new_service.json
 echo "Imported $TS_KEY."
 
