@@ -1,3 +1,6 @@
+[![Maven](https://github.com/servicecatalog/oscm-basyx/actions/workflows/maven.yml/badge.svg)](https://github.com/servicecatalog/oscm-basyx/actions)
+[![codecov](https://codecov.io/gh/servicecatalog/oscm-basyx/branch/main/graph/badge.svg)](https://codecov.io/gh/servicecatalog/oscm-basyx)
+
 # oscm-basyx
 The OSCM BaSyx Connector. This tool is meant to enhance OSCM for discovering and importing service data privided from asset administration shells.
 
