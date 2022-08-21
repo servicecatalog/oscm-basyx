@@ -27,8 +27,8 @@ Add the variables in /docker/var.env
 Clone this repo and import it in your ```<workspace>.```
 
 ### Eclipse
-1. From the Eclipse menu choose *Run->Run Configurations...*
-2. Create Maven Build configuration, enter Goals: *clean install*.
+1. Locate the pom.xml file and choose *Run As->Run Configurations...* from the context menu.
+2. Name the Maven Build configuration, enter Goals: *clean install*.
 3. On the tab *Environment* add the variables above and press *Run*.
 
 ### IntelliJ
