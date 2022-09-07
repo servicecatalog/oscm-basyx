@@ -1,7 +1,7 @@
 [![Maven](https://github.com/servicecatalog/oscm-basyx/actions/workflows/maven.yml/badge.svg)](https://github.com/servicecatalog/oscm-basyx/actions)
 
 # oscm-basyx
-The OSCM BaSyx Connector. This tool is meant to enhance OSCM for discovering and importing service data privided from asset administration shells.
+The OSCM BaSyx Connector. This tool is meant to enhance OSCM for discovering and importing service data provided from asset administration shells.
 
 ## Required
 Latest OSCM is up running on your server <OSCM_HOST> (install dir referred as /docker). Checkout [this Readme](https://github.com/servicecatalog/oscm-dockerbuild#quick-start-oscm-with-docker) for getting started with OSCM.
