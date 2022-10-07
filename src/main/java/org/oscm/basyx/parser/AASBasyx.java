@@ -49,11 +49,12 @@ public class AASBasyx {
     return Optional.ofNullable(digitalNameplateSM);
   }
 
-  public static Optional<String> readManufacturerProductName(ISubmodel nameplateSubmodel) {
+  public static Optional<String> readPropertyFromModel(
+      ISubmodel nameplateSubmodel, String propKey) {
 
     Map<String, IProperty> mapProperties = nameplateSubmodel.getProperties();
 
-    IProperty manufacturerProdNameProp = mapProperties.get("ManufactName");
+    IProperty manufacturerProdNameProp = mapProperties.get(propKey);
 
     String manufacturerProductName = (String) manufacturerProdNameProp.getValue();
     return Optional.ofNullable(manufacturerProductName);

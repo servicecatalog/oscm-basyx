@@ -65,9 +65,9 @@ public class TechnicalServiceControllerBasyx {
 
       final ModelUrn aasIdentifier = new ModelUrn(aasId);
       String aasShortId = aasIdentifier.getId();
-      ISubmodel npmSubmodel = getNameplateSubmodel(aasIdentifier);
+      ISubmodel npm = getNameplateSubmodel(aasIdentifier);
 
-      Optional<List<ServiceParameterBasyx>> parList = NameplateBasyx.parseProperties(npmSubmodel);
+      Optional<List<ServiceParameterBasyx>> parList = NameplateBasyx.parseProperties(npm);
       if (parList.isPresent()) {
         final String tsApiUrl = getApiUrl(auth);
         Optional<String> updatedXML = buildTechnicalServices(aasShortId, parList.get(), tsApiUrl);
@@ -87,6 +87,35 @@ public class TechnicalServiceControllerBasyx {
 
     return ResponseEntity.ok().body("Done.");
   }
+
+  @GetMapping(value = "/techservice/xml/**", produces = MediaType.APPLICATION_PROBLEM_JSON_VALUE)
+  public ResponseEntity<String> exportAsXml(HttpServletRequest request) {
+    try {
+      final String[] auth = checkAccess();
+
+      String aasId = getAasIdFromRequestURL(request);
+
+      final ModelUrn aasIdentifier = new ModelUrn(aasId);
+      String aasShortId = aasIdentifier.getId();
+      ISubmodel npm = getNameplateSubmodel(aasIdentifier);
+
+      Optional<List<ServiceParameterBasyx>> parList = NameplateBasyx.parseProperties(npm);
+      if (parList.isPresent()) {
+        final String tsApiUrl = getApiUrl(auth);
+        Optional<String> updatedXML = buildTechnicalServices(aasShortId, parList.get(), tsApiUrl);
+        if (updatedXML.isPresent()) {
+          return ResponseEntity.ok().body(updatedXML.get());
+        }
+        throw NotFound(String.format("Got nothing from :\n %s", XML_API_URI));
+      }
+
+    } catch (NotFound | AccessDenied | InternalError ade) {
+      return asResponseEntity(ade);
+    }
+
+    return ResponseEntity.ok().body("Done.");
+  }
+   
 
   /**
    * @param request
@@ -136,7 +165,8 @@ public class TechnicalServiceControllerBasyx {
       final ModelUrn aasIdentifier = new ModelUrn(aasId);
 
       ISubmodel npmSubmodel = getNameplateSubmodel(aasIdentifier);
-      Optional<String> manufacturerProductName = AASBasyx.readManufacturerProductName(npmSubmodel);
+      Optional<String> manufacturerProductName =
+          AASBasyx.readPropertyFromModel(npmSubmodel, "ManufactName");
 
       if (manufacturerProductName.isPresent()) {
         return ResponseEntity.ok().body("Manufacturer product name is." + manufacturerProductName);
