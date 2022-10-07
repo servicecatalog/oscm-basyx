@@ -1,19 +1,25 @@
 package org.oscm.basyx.parser;
 
-import com.google.gson.Gson;
-import org.oscm.basyx.oscmmodel.ServiceParameter;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.List;
+import java.util.Optional;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.oscm.basyx.oscmmodel.ServiceParameterBasyx;
 import org.oscm.basyx.oscmmodel.TechnicalServicesXMLMapper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.*;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.List;
-import java.util.Optional;
+import com.google.gson.Gson;
 
 public class TechnicalServiceXML {
   private final Node root;
@@ -55,7 +61,8 @@ public class TechnicalServiceXML {
     }
   }
 
-  public static TechnicalServicesXMLMapper update(TechnicalServicesXMLMapper ts, List<ServiceParameter> ls, String tsId)
+  public static TechnicalServicesXMLMapper update(
+      TechnicalServicesXMLMapper ts, List<ServiceParameterBasyx> ls, String tsId)
       throws ParserConfigurationException, IOException, SAXException {
     Node tsNode = getTSByIdOrDefault(ts, tsId);
     insert(tsNode, ls);
@@ -81,10 +88,10 @@ public class TechnicalServiceXML {
     return service.get();
   }
 
-  private static void insert(Node node, List<ServiceParameter> serviceParams) {
+  private static void insert(Node node, List<ServiceParameterBasyx> serviceParams) {
     List<Element> list = XMLHelper.getElementsByTag(node, "ParameterDefinition");
 
-    for (ServiceParameter sp : serviceParams) {
+    for (ServiceParameterBasyx sp : serviceParams) {
       if (!XMLHelper.contains(list, "id", sp.name)) {
         Element pmd = XMLHelper.createChild(node, "ParameterDefinition");
         XMLHelper.addAttribute(pmd, "configurable", "true");
@@ -107,8 +114,8 @@ public class TechnicalServiceXML {
 
   public static Optional<TechnicalServicesXMLMapper> parseJson(String json) {
     try {
-    TechnicalServicesXMLMapper rs = new Gson().fromJson(json, TechnicalServicesXMLMapper.class);
-    return Optional.ofNullable(rs);
+      TechnicalServicesXMLMapper rs = new Gson().fromJson(json, TechnicalServicesXMLMapper.class);
+      return Optional.ofNullable(rs);
     } catch (Throwable e) {
       throw new IllegalStateException(json, e);
     }
