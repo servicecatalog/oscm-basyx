@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.basyx.submodel.metamodel.api.ISubmodel;
 import org.eclipse.basyx.submodel.metamodel.api.identifier.IdentifierType;
+import org.eclipse.basyx.submodel.metamodel.api.qualifier.haskind.ModelingKind;
 import org.eclipse.basyx.submodel.metamodel.map.Submodel;
 import org.eclipse.basyx.submodel.metamodel.map.identifier.Identifier;
 import org.eclipse.basyx.submodel.metamodel.map.submodelelement.dataelement.property.Property;
@@ -42,6 +43,8 @@ public class NameplateBasyxTest {
     Property manufactNameProp = new Property();
     manufactNameProp.setIdShort("ManufactName");
     manufactNameProp.setValue("Bob Manufacturer");
+    manufactNameProp.setKind(ModelingKind.INSTANCE);
+    manufactNameProp.setCategory("PARAMETER");
 
     submodel.addSubmodelElement(manufactNameProp);
     return submodel;
