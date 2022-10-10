@@ -189,7 +189,7 @@ public class TechnicalServiceControllerBasyx {
     Optional<ISubmodel> npm = Optional.empty();
     try {
       npm = AASBasyx.getNameplate(registryUrl, aasIdentifier);
-    } catch (IOException e) {
+    } catch (Exception e) {
       // log
     }
     if (!npm.isPresent()) {

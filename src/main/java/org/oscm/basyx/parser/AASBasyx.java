@@ -8,7 +8,6 @@
 
 package org.oscm.basyx.parser;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -26,7 +25,7 @@ import org.eclipse.basyx.vab.protocol.http.connector.HTTPConnectorFactory;
 public class AASBasyx {
 
   public static Optional<ISubmodel> getNameplate(String registryUrl, IIdentifier aasIdentifier)
-      throws IOException {
+      throws Exception {
 
     IConnectorFactory connectorFactory = new HTTPConnectorFactory();
 
