@@ -7,6 +7,7 @@
 */
 package org.oscm.basyx.parser;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -28,10 +29,16 @@ public class NameplateBasyxTest {
   public void parseProperties() {
     // given
     ISubmodel nameplate = givenNameplate();
+
+    // when
     Optional<List<ServiceParameterBasyx>> params = NameplateBasyx.parseProperties(nameplate);
 
+    // then
     assertTrue(params.isPresent());
     assertTrue(contains(params.get(), "ManufactName"), "Property not found ");
+    assertFalse(
+        contains(params.get(), "SerialNumber"),
+        "Only Mandatory Properties are added to the list of ServiceParameters.");
   }
 
   ISubmodel givenNameplate() {
@@ -46,7 +53,14 @@ public class NameplateBasyxTest {
     manufactNameProp.setKind(ModelingKind.INSTANCE);
     manufactNameProp.setCategory("PARAMETER");
 
+    Property serialNumberProp = new Property();
+    serialNumberProp.setIdShort("SerialNumber");
+    serialNumberProp.setValue("123");
+    serialNumberProp.setKind(ModelingKind.INSTANCE);
+    serialNumberProp.setCategory("PARAMETER");
+
     submodel.addSubmodelElement(manufactNameProp);
+    submodel.addSubmodelElement(serialNumberProp);
     return submodel;
   }
 

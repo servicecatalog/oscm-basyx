@@ -17,10 +17,10 @@ public class ServiceParameterBasyx {
   public String name;
   public String category;
 
-  public ServiceParameterBasyx(IProperty prop) {
-    this.type = prop.getValueType().toString();
-    this.defaultValue = prop.getValue().toString();
-    this.name = prop.getIdShort();
-    this.category = prop.getCategory();
+  public ServiceParameterBasyx(IProperty submodelProperty) {
+    this.type = submodelProperty.getValueType().toString();
+    this.defaultValue = submodelProperty.getValue().toString();
+    this.name = submodelProperty.getIdShort();
+    this.category = submodelProperty.getCategory();
   }
 }
