@@ -1,0 +1,9 @@
+{
+  "type": "PRO_RATA",
+  "period": "HOUR",
+  "pricePerPeriod": 2,
+  "pricePerUserAssignment": 0,
+  "currencyISOCode": "EUR",
+  "oneTimeFee": 10,
+  "etag": 1
+}
