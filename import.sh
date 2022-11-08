@@ -19,12 +19,12 @@ TS_KEY=$(curl -ku "$USER:$PASS" -X GET "https://$OSCM_HOST:8881/discovery/techse
 if [[ $TS_KEY == *"errorMsg"* ]]; then
   echo "Not found!"
   unset TS_KEY
-else  
+else
   curl -ku "$USER:$PASS" -X DELETE "https://$OSCM_HOST:8081/oscm-rest-api/v1/technicalservices/$TS_KEY" -H  "accept: */*"
   echo "Deleted Technical Service $TS_KEY."
 fi
 
-curl -ku "$USER:$PASS" -X GET "https://$OSCM_HOST:8881/discovery/techservice/json/$TSID" -H "accept: application/problem+json"  > /tmp/new_service.json
+curl -ku "$USER:$PASS" -X GET https://$OSCM_HOST:8881/discovery/techservice/json/$TSID -H "accept: application/problem+json"  > /tmp/new_service.json
 
 sed -i s/"\\\u003d"/"="/g  /tmp/new_service.json
 sed -i s/"\\\u003c"/"<"/g  /tmp/new_service.json
