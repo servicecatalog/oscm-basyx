@@ -9,10 +9,17 @@
  */
 package org.oscm.basyx.oscmmodel;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.Gson;
+
+import java.lang.reflect.Type;
+import com.google.gson.reflect.TypeToken;
 
 /** @author farmaki */
 public class MarketableServiceInfo {
@@ -35,18 +42,36 @@ public class MarketableServiceInfo {
     this.serviceId = serviceId;
   }
 
-  List<MarketableServiceParameterItem> parameters = new ArrayList<>();
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  List<MarketableServiceParameter> parameters = loadDefaultParamsFromJsonFile();
 
   public String parametersToJson() {
     Gson gson = new Gson();
-    String parametersJson = gson.toJson(parameters);
-    return parametersJson;
+    return gson.toJson(parameters);
+  }
+
+  public List<MarketableServiceParameter> loadDefaultParamsFromJsonFile() {
+    InputStream inputStream = this.getClass()
+            .getResourceAsStream("/default_params.json");
+    if (inputStream == null) {
+      return new ArrayList<>();
+    }
+    try (Reader reader = new InputStreamReader(inputStream)) {
+      Gson gson = new Gson();
+      Type parametersListType = new TypeToken<ArrayList<MarketableServiceParameter>>(){}.getType();
+      return gson.fromJson(reader, parametersListType);
+    } catch (IOException e) {
+      e.printStackTrace();
+      return new ArrayList<>();
+    }
   }
 
   public void insert(List<ServiceParameter> serviceParams) {
-
     for (ServiceParameter sp : serviceParams) {
-      parameters.add(new MarketableServiceParameterItem(sp.name, sp.defaultValue, true));
+      parameters.add(new MarketableServiceParameter(sp.name, sp.defaultValue, true));
     }
   }
 }

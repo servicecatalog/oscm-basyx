@@ -10,12 +10,12 @@
 package org.oscm.basyx.oscmmodel;
 
 /** @author farmaki */
-public class MarketableServiceParameterItem {
+public class MarketableServiceParameter {
   private String parameterId;
   private String value;
   private boolean configurable;
 
-  public MarketableServiceParameterItem(String paramId, String value, boolean configurable) {
+  public MarketableServiceParameter(String paramId, String value, boolean configurable) {
     this.parameterId = paramId;
     this.value = value;
     this.configurable = configurable;
