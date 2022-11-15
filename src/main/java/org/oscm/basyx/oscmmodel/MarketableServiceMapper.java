@@ -2,7 +2,7 @@ package org.oscm.basyx.oscmmodel;
 
 import com.google.gson.Gson;
 
-public class MarketableServiceConverter {
+public class MarketableServiceMapper {
 
     public static String toJson(MarketableServiceInfo serviceInfo) {
         Gson gson = new Gson();

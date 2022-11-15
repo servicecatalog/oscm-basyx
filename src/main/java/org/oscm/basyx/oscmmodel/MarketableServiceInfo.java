@@ -42,6 +42,18 @@ public class MarketableServiceInfo {
     this.serviceId = serviceId;
   }
 
+  public String getTechnicalServiceId() {
+    return this.technicalServiceId;
+  }
+
+  public String getServiceId() {
+    return this.serviceId;
+  }
+
+  public List<MarketableServiceParameter> getParameters() {
+    return this.parameters;
+  }
+
   public void setName(String name) {
     this.name = name;
   }
