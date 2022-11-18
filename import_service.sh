@@ -2,7 +2,7 @@
 
 source testvars.conf
 
-# Export the json for a MarketableService to a file: new_marketable_service.json and use this as the payload
+# Create a service payload for the creation of
 curl -ku "$USER:$PASS" -X GET https://$OSCM_HOST:8881/discovery/mservice/json/$TSID -H "accept: application/problem+json" > /tmp/new_marketable_service.json
 SERVICE_PAYLOAD=$(cat /tmp/new_marketable_service.json)
 echo $SERVICE_PAYLOAD
@@ -15,7 +15,7 @@ if [[ ${HTTP_CODE} -ne 201 ]];then
     echo $ERROR_DETAILS
     exit 1
 else
-    echo "The Marketable Service Creation was successful."
+    echo "The Marketable Service was created successfully."
     MS_KEY=$(cat /tmp/response.txt | sed -n 's|.*"createdObjectId":"\([^"]*\)".*|\1|p')
     echo "The created service key is : ${MS_KEY}."
     printf "MS_KEY=$MS_KEY"$'\n' >> testvars.conf
