@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Clear content of variables file before creating a new TechService.
+echo -n "" > testvars.conf
 if [[ -z $OSCM_HOST ]]; then
   echo "***OSCM_HOST is not set. OSCM_HOST=<fully qualified name of your OSCM server>."
   exit 1
@@ -9,11 +11,14 @@ TSID=$1
 USER=${2:-$API_USER_KEY}
 PASS=${3:-$API_PASS}
 
-
 if [[ -z $USER || -z $PASS || -z $1 ]]; then
   echo "***Missing arguments. Call $0 <AAS_Id> [<User> <Password>]."
   exit 1
 fi
+
+printf "%s" "TSID=$TSID"$'\n' >> testvars.conf
+printf "%s" "USER=$USER"$'\n' >> testvars.conf
+printf "%s" "PASS=$PASS"$'\n' >> testvars.conf
 
 TS_KEY=$(curl -ku "$USER:$PASS" -X GET "https://$OSCM_HOST:8881/discovery/techservice/id/$TSID" -H "accept: application/problem+json")
 if [[ $TS_KEY == *"errorMsg"* ]]; then
@@ -37,6 +42,7 @@ curl -ku "$USER:$PASS" -X PUT "https://$OSCM_HOST:8081/oscm-rest-api/v1/technica
 
 TS_KEY=$(curl -ku "$USER:$PASS" -X GET "https://$OSCM_HOST:8881/discovery/techservice/id/$TSID" -H "accept: application/problem+json")
 
+printf "TS_KEY=$TS_KEY"$'\n' >> testvars.conf
 rm -f /tmp/new_service.json
 echo "Imported $TS_KEY."
 
