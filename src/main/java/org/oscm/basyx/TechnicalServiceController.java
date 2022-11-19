@@ -9,9 +9,7 @@
 package org.oscm.basyx;
 
 import org.oscm.basyx.model.NameplateModel;
-import org.oscm.basyx.oscmmodel.ServiceParameter;
-import org.oscm.basyx.oscmmodel.TechnicalServicesMapper;
-import org.oscm.basyx.oscmmodel.TechnicalServicesXMLMapper;
+import org.oscm.basyx.oscmmodel.*;
 import org.oscm.basyx.parser.AAS;
 import org.oscm.basyx.parser.Nameplate;
 import org.oscm.basyx.parser.TechnicalServiceXML;
@@ -73,6 +71,32 @@ public class TechnicalServiceController {
           return ResponseEntity.ok().body(json);
         }
         throw NotFound(String.format("Got nothing from :\n %s", XML_API_URI));
+      }
+
+    } catch (NotFound | AccessDenied | InternalError ade) {
+      return asResponseEntity(ade);
+    }
+
+    return ResponseEntity.ok().body("Done.");
+  }
+
+  @GetMapping(
+          value = "/mservice/json/{aasId}",
+          produces = MediaType.APPLICATION_PROBLEM_JSON_VALUE)
+  public ResponseEntity<String> exportServiceAsJson(@PathVariable String aasId) {
+    try {
+      final String[] auth = checkAccess();
+
+      final String aasShortId = decode(aasId);
+
+      NameplateModel npm = getNameplateModel(aasShortId);
+      Optional<List<ServiceParameter>> parList = Nameplate.parseProperties(npm);
+
+      if (parList.isPresent()) {
+        final String serviceJson = buildMarketableServiceAsJson(aasShortId, parList.get());
+        if (serviceJson != null)  return ResponseEntity.ok().body(serviceJson);
+
+        throw NotFound(String.format("Got  from :\n %s", registryUrl));
       }
 
     } catch (NotFound | AccessDenied | InternalError ade) {
@@ -187,6 +211,16 @@ public class TechnicalServiceController {
     return Optional.empty();
   }
 
+  private String buildMarketableServiceAsJson(
+          String aasShortId, List<ServiceParameter> parList) {
+      MarketableServiceInfo serviceInfo = new MarketableServiceInfo();
+      serviceInfo.setTechnicalServiceId(aasShortId);
+      serviceInfo.setServiceId(aasShortId);
+      serviceInfo.setName(aasShortId);
+      serviceInfo.insert(parList);
+      return MarketableServiceMapper.toJson(serviceInfo);
+}
+
   String buildJsonEmptyTemplate() {
     return "{ \n"
         + "\"items\": [\n"
@@ -218,4 +252,5 @@ public class TechnicalServiceController {
   String getApiUrl(String[] auth) {
     return getApiUrl(auth, XML_API_URI);
   }
+
 }

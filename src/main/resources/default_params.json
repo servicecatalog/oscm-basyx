@@ -1,0 +1,37 @@
+[
+    {
+      "parameterId": "PROVISIONING_SCRIPT",
+      "value": "provisioning.sh",
+      "configurable": false
+    },
+    {
+      "parameterId": "DEPROVISIONING_SCRIPT",
+      "value": "deprovisioning.sh",
+      "configurable": false
+    },
+    {
+      "parameterId": "UPDATE_SCRIPT",
+      "value": "update.sh",
+      "configurable": false
+    },
+    {
+      "parameterId": "ASSIGN_USER_SCRIPT",
+      "value": "assign_user.sh",
+      "configurable": false
+    },
+    {
+      "parameterId": "DEASSIGN_USER_SCRIPT",
+      "value": "deassign_user.sh",
+      "configurable": false
+    },
+    {
+      "parameterId": "CHECK_STATUS_SCRIPT",
+      "value": "check_status.sh",
+      "configurable": false
+    },
+    {
+      "parameterId": "SCRIPT_TIMEOUT_SECONDS",
+      "value": "600",
+      "configurable": false
+    }
+  ]
