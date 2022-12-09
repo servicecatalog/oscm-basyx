@@ -1,9 +1,22 @@
 {
-  "type": "PRO_RATA",
-  "period": "HOUR",
-  "pricePerPeriod": 2,
+  "description": "",
+  "period": "MONTH",
+  "pricePerPeriod": 0,
   "pricePerUserAssignment": 0,
   "currencyISOCode": "EUR",
-  "oneTimeFee": 10,
-  "etag": 1
+  "oneTimeFee": 45,
+  "type": "PRO_RATA",
+  "consideredEvents": [
+    {
+      "eventDefinition": {
+        "eventType": "SERVICE_EVENT",
+        "eventId": "DAYS_CHARGED",
+        "eventDescription": "Machine Booking (Day)",
+        "etag": 0
+      },
+      "eventPrice": 39,
+      "etag": 1
+    }
+  ],
+  "etag": 0
 }

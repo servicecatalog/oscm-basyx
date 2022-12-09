@@ -84,8 +84,8 @@
       <LocalizedDescription locale="ja"/>
     </ParameterDefinition>
     <Event id="DAYS_CHARGED">
-      <LocalizedDescription locale="de">Maschinenmiete (Tage)</LocalizedDescription>
-      <LocalizedDescription locale="en">Machine Booking (Days)</LocalizedDescription>
+      <LocalizedDescription locale="de">Maschinenmiete (Tag)</LocalizedDescription>
+      <LocalizedDescription locale="en">Machine Booking (Day)</LocalizedDescription>
       <LocalizedDescription locale="ja"/>
     </Event>
     <Operation actionURL="http://oscm-app:8880/oscm-app/webservices/oscm-app/oscm-app/org.oscm.app.v2_0.service.AsynchronousOperationProxy?wsdl" id="START_MACHINE">
