@@ -53,7 +53,7 @@
       <LocalizedDescription locale="de"/>
       <LocalizedDescription locale="ja"/>
     </ParameterDefinition>
-    <ParameterDefinition configurable="true" default="1" id="BOOKING_NOF_DAYS" mandatory="true" valueType="INTEGER">
+    <ParameterDefinition configurable="true" id="BOOKING_NOF_DAYS" mandatory="true" valueType="INTEGER">
       <LocalizedDescription locale="en">Number of days.</LocalizedDescription>
       <LocalizedDescription locale="de"/>
       <LocalizedDescription locale="ja"/>
