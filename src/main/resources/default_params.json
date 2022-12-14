@@ -36,7 +36,7 @@
     },
     {
       "parameterId": "BOOKINGDATE",
-      "value": "2022-12-07",
+      "value": "2022-12-13",
       "configurable": true
     },
     {
@@ -46,7 +46,7 @@
     },
     {
       "parameterId": "MY_SCRIPT_APP_NAME",
-      "value": "IdMachine110",
+      "value": "IdMachine113",
       "configurable": false
     },
     {
