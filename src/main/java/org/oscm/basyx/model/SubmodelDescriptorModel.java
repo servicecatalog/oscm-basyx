@@ -9,7 +9,7 @@
 package org.oscm.basyx.model;
 
 /** @author goebel */
-public class NameplateModel {
+public class SubmodelDescriptorModel {
   public ModelType modelType;
   public String idShort;
   public String kind;

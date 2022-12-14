@@ -13,12 +13,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.Gson;
-
-import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
 
 /** @author farmaki */
@@ -50,12 +49,32 @@ public class MarketableServiceInfo {
     return this.serviceId;
   }
 
-  public List<MarketableServiceParameter> getParameters() {
-    return this.parameters;
+  public void setServiceName(String name) {
+    this.name = name;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public String getServiceName() {
+    return this.name;
+  }
+
+  public void setServiceDescription(String description) {
+    this.description = description;
+  }
+
+  public String getServiceDescritpion() {
+    return this.description;
+  }
+
+  public void setServiceShortDescription(String shortDesc) {
+    this.shortDescription = shortDesc;
+  }
+
+  public String getServiceShortDescritpion() {
+    return this.shortDescription;
+  }
+
+  public List<MarketableServiceParameter> getParameters() {
+    return this.parameters;
   }
 
   List<MarketableServiceParameter> parameters = loadDefaultParamsFromJsonFile();
@@ -66,14 +85,13 @@ public class MarketableServiceInfo {
   }
 
   public List<MarketableServiceParameter> loadDefaultParamsFromJsonFile() {
-    InputStream inputStream = this.getClass()
-            .getResourceAsStream("/default_params.json");
+    InputStream inputStream = this.getClass().getResourceAsStream("/default_params.json");
     if (inputStream == null) {
       return new ArrayList<>();
     }
     try (Reader reader = new InputStreamReader(inputStream)) {
       Gson gson = new Gson();
-      Type parametersListType = new TypeToken<ArrayList<MarketableServiceParameter>>(){}.getType();
+      Type parametersListType = new TypeToken<ArrayList<MarketableServiceParameter>>() {}.getType();
       return gson.fromJson(reader, parametersListType);
     } catch (IOException e) {
       e.printStackTrace();

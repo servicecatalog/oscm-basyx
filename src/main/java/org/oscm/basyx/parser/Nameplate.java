@@ -9,7 +9,7 @@
 package org.oscm.basyx.parser;
 
 import com.google.gson.Gson;
-import org.oscm.basyx.model.NameplateModel;
+import org.oscm.basyx.model.SubmodelDescriptorModel;
 import org.oscm.basyx.model.SubmodelElement;
 import org.oscm.basyx.oscmmodel.ServiceParameter;
 
@@ -20,13 +20,13 @@ import java.util.stream.Collectors;
 
 /** @author goebel */
 public class Nameplate {
-  static Optional<NameplateModel> parseNameplate(String json) {
-    NameplateModel rs = new Gson().fromJson(json, NameplateModel.class);
+  static Optional<SubmodelDescriptorModel> parseSubmodelDescriptorModel(String json) {
+    SubmodelDescriptorModel rs = new Gson().fromJson(json, SubmodelDescriptorModel.class);
 
     return Optional.ofNullable(rs);
   }
 
-  public static Optional<List<ServiceParameter>> parseProperties(NameplateModel npm) {
+  public static Optional<List<ServiceParameter>> parseProperties(SubmodelDescriptorModel npm) {
 
     List<ServiceParameter> params = new ArrayList<>();
 

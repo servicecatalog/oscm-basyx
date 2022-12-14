@@ -18,4 +18,11 @@ public class SubmodelElement {
   public ModelType modelType;
   public Identification identification;
   public SemanticId semanticId;
+
+  public String getValue() {
+    if (value != null) {
+      return value.toString();
+    }
+    return null;
+  }
 }

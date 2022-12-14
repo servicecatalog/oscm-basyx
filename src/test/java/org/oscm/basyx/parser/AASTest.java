@@ -8,12 +8,12 @@
 
 package org.oscm.basyx.parser;
 
-import org.junit.jupiter.api.Test;
-import org.oscm.basyx.model.NameplateModel;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+import org.oscm.basyx.model.SubmodelDescriptorModel;
 
 /** @author goebel */
 public class AASTest {
@@ -33,7 +33,7 @@ public class AASTest {
     final String json = givenNameplateJson();
 
     // when
-    Optional<NameplateModel> nm = Nameplate.parseNameplate(json);
+    Optional<SubmodelDescriptorModel> nm = Nameplate.parseSubmodelDescriptorModel(json);
 
     // then
     assertTrue(nm.isPresent());
@@ -45,7 +45,8 @@ public class AASTest {
     final String json = givenAASJson();
 
     // when
-    Optional<String> address = AAS.getNameplateEndpointForAAS(json, "Festo_3S7PM0CP4BD");
+    Optional<String> address =
+        AAS.getSubmodelEndpointForAAS(json, "Festo_3S7PM0CP4BD", "Nameplate");
 
     // then
     assertTrue(address.isPresent());

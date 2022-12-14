@@ -8,9 +8,32 @@
 
 package org.oscm.basyx;
 
-import org.oscm.basyx.model.NameplateModel;
-import org.oscm.basyx.oscmmodel.*;
+import static org.oscm.basyx.Exceptions.AccessDenied;
+import static org.oscm.basyx.Exceptions.InternalError;
+import static org.oscm.basyx.Exceptions.NotFound;
+import static org.oscm.basyx.Exceptions.asResponseEntity;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.List;
+import java.util.Optional;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.oscm.basyx.Exceptions.AccessDenied;
+import org.oscm.basyx.Exceptions.InternalError;
+import org.oscm.basyx.Exceptions.NotFound;
+import org.oscm.basyx.model.SubmodelDescriptorModel;
+import org.oscm.basyx.oscmmodel.MarketableServiceInfo;
+import org.oscm.basyx.oscmmodel.MarketableServiceMapper;
+import org.oscm.basyx.oscmmodel.ServiceParameter;
+import org.oscm.basyx.oscmmodel.TechnicalServicesMapper;
+import org.oscm.basyx.oscmmodel.TechnicalServicesXMLMapper;
 import org.oscm.basyx.parser.AAS;
+import org.oscm.basyx.parser.Identification;
 import org.oscm.basyx.parser.Nameplate;
 import org.oscm.basyx.parser.TechnicalServiceXML;
 import org.oscm.basyx.parser.TechnicalServices;
@@ -23,18 +46,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.thymeleaf.util.StringUtils;
 import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
-
-import static org.oscm.basyx.Exceptions.InternalError;
-import static org.oscm.basyx.Exceptions.*;
 
 /** @author goebel */
 @Controller
@@ -58,7 +69,7 @@ public class TechnicalServiceController {
       final String[] auth = checkAccess();
       final String aasShortId = decode(aasId);
 
-      NameplateModel npm = getNameplateModel(aasShortId);
+      SubmodelDescriptorModel npm = getNameplateModel(aasShortId);
       Optional<List<ServiceParameter>> parList = Nameplate.parseProperties(npm);
       if (parList.isPresent()) {
         final String tsApiUrl = getApiUrl(auth);
@@ -80,21 +91,37 @@ public class TechnicalServiceController {
     return ResponseEntity.ok().body("Done.");
   }
 
-  @GetMapping(
-          value = "/mservice/json/{aasId}",
-          produces = MediaType.APPLICATION_PROBLEM_JSON_VALUE)
+  @GetMapping(value = "/mservice/json/{aasId}", produces = MediaType.APPLICATION_PROBLEM_JSON_VALUE)
   public ResponseEntity<String> exportServiceAsJson(@PathVariable String aasId) {
     try {
       final String[] auth = checkAccess();
 
       final String aasShortId = decode(aasId);
 
-      NameplateModel npm = getNameplateModel(aasShortId);
+      SubmodelDescriptorModel npm = getNameplateModel(aasShortId);
       Optional<List<ServiceParameter>> parList = Nameplate.parseProperties(npm);
 
+      Optional<String> serviceName = Optional.empty();
+      Optional<String> serviceDescription = Optional.empty();
+      Optional<String> serviceShortDescription = Optional.empty();
+      SubmodelDescriptorModel identificationModel = getIdentificationModel(aasShortId);
+      if (identificationModel != null) {
+
+        serviceName = Identification.parseManuProductName(identificationModel);
+
+        serviceDescription = Identification.parseManuProductDescription(identificationModel);
+
+        serviceShortDescription = serviceDescription;
+      }
       if (parList.isPresent()) {
-        final String serviceJson = buildMarketableServiceAsJson(aasShortId, parList.get());
-        if (serviceJson != null)  return ResponseEntity.ok().body(serviceJson);
+        final String serviceJson =
+            buildMarketableServiceAsJson(
+                aasShortId,
+                parList.get(),
+                serviceName,
+                serviceDescription,
+                serviceShortDescription);
+        if (serviceJson != null) return ResponseEntity.ok().body(serviceJson);
 
         throw NotFound(String.format("Got  from :\n %s", registryUrl));
       }
@@ -114,7 +141,7 @@ public class TechnicalServiceController {
       final String[] auth = checkAccess();
       final String aasShortId = decode(aasId);
 
-      NameplateModel npm = getNameplateModel(aasShortId);
+      SubmodelDescriptorModel npm = getNameplateModel(aasShortId);
       Optional<List<ServiceParameter>> parList = Nameplate.parseProperties(npm);
       if (parList.isPresent()) {
         final String tsApiUrl = getApiUrl(auth);
@@ -172,8 +199,8 @@ public class TechnicalServiceController {
     return auth.get();
   }
 
-  NameplateModel getNameplateModel(String id) {
-    Optional<NameplateModel> npm = Optional.empty();
+  SubmodelDescriptorModel getNameplateModel(String id) {
+    Optional<SubmodelDescriptorModel> npm = Optional.empty();
     try {
       npm = AAS.getNameplate(conn, registryUrl, id);
     } catch (IOException e) {
@@ -183,6 +210,19 @@ public class TechnicalServiceController {
       throw NotFound(String.format("Nameplate not found for %s", id));
     }
     return npm.get();
+  }
+
+  SubmodelDescriptorModel getIdentificationModel(String id) {
+    Optional<SubmodelDescriptorModel> identSubmodel = Optional.empty();
+    try {
+        identSubmodel = AAS.getIdentification(conn, registryUrl, id);
+    } catch (IOException e) {
+      // log
+    }
+    if (!identSubmodel.isPresent()) {
+      return null;
+    }
+    return identSubmodel.get();
   }
 
   private Optional<String> buildTechnicalServices(
@@ -212,14 +252,32 @@ public class TechnicalServiceController {
   }
 
   private String buildMarketableServiceAsJson(
-          String aasShortId, List<ServiceParameter> parList) {
-      MarketableServiceInfo serviceInfo = new MarketableServiceInfo();
-      serviceInfo.setTechnicalServiceId(aasShortId);
-      serviceInfo.setServiceId(aasShortId);
-      serviceInfo.setName(aasShortId);
-      serviceInfo.insert(parList);
-      return MarketableServiceMapper.toJson(serviceInfo);
-}
+      String aasShortId,
+      List<ServiceParameter> parList,
+      Optional<String> serviceName,
+      Optional<String> shortDesc,
+      Optional<String> description) {
+    MarketableServiceInfo serviceInfo = new MarketableServiceInfo();
+    serviceInfo.setTechnicalServiceId(aasShortId);
+    serviceInfo.setServiceId(aasShortId);
+    
+    if (serviceName.isPresent()) {
+      serviceInfo.setServiceName(serviceName.get());
+    }
+    else {
+        serviceInfo.setServiceName(aasShortId);
+    }
+
+    if (description.isPresent()) {
+      serviceInfo.setServiceDescription(description.get());
+    }
+    if (shortDesc.isPresent()) {
+      serviceInfo.setServiceShortDescription(shortDesc.get());
+    }
+
+    serviceInfo.insert(parList);
+    return MarketableServiceMapper.toJson(serviceInfo);
+  }
 
   String buildJsonEmptyTemplate() {
     return "{ \n"
@@ -252,5 +310,4 @@ public class TechnicalServiceController {
   String getApiUrl(String[] auth) {
     return getApiUrl(auth, XML_API_URI);
   }
-
 }
