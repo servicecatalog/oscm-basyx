@@ -7,5 +7,5 @@ if [[ -z $MS_KEY ]]; then
   exit 1
 fi
 
-MPID="10001"
+MPID=11000
 curl -ku "$USER:$PASS" -X PUT "https://$OSCM_HOST:8081/oscm-rest-api/v1/marketplaces/$MPID/entries/$MS_KEY" -H  "accept: */*" -H  "Content-Type: application/json" -d "{\"anonymousVisible\":true,\"visibleInCatalog\":true,\"etag\":1}"

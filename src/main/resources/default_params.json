@@ -16,22 +16,52 @@
     },
     {
       "parameterId": "ASSIGN_USER_SCRIPT",
-      "value": "assign_user.sh",
+      "value": "assign.sh",
       "configurable": false
     },
     {
       "parameterId": "DEASSIGN_USER_SCRIPT",
-      "value": "deassign_user.sh",
+      "value": "deassign.sh",
       "configurable": false
     },
     {
       "parameterId": "CHECK_STATUS_SCRIPT",
-      "value": "check_status.sh",
+      "value": "status.sh",
       "configurable": false
     },
     {
       "parameterId": "SCRIPT_TIMEOUT_SECONDS",
       "value": "600",
+      "configurable": false
+    },
+    {
+      "parameterId": "BOOKINGDATE",
+      "value": "2022-12-13",
+      "configurable": true
+    },
+    {
+      "parameterId": "BOOKING_NOF_DAYS",
+      "value": "5",
+      "configurable": true
+    },
+    {
+      "parameterId": "MY_SCRIPT_APP_NAME",
+      "value": "IdMachine113",
+      "configurable": false
+    },
+    {
+      "parameterId": "OPERATIONS_SCRIPT",
+      "value": "",
+      "configurable": false
+    },
+    {
+      "parameterId": "UPDATE_USER_SCRIPT",
+      "value": "",
+      "configurable": false
+    },
+    {
+      "parameterId": "VERIFICATION_SCRIPT",
+      "value": "",
       "configurable": false
     }
   ]

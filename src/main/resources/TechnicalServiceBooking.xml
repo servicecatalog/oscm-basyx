@@ -8,32 +8,32 @@
       <LocalizedDescription locale="de"/>
       <LocalizedDescription locale="ja"/>
     </ParameterDefinition>
-    <ParameterDefinition configurable="true" id="PROVISIONING_SCRIPT" mandatory="true" valueType="STRING">
+    <ParameterDefinition configurable="true" default="provisioning.sh" id="PROVISIONING_SCRIPT" mandatory="true" valueType="STRING">
       <LocalizedDescription locale="en">Provisioning Script. Absolute filesystem path or URL to script file</LocalizedDescription>
       <LocalizedDescription locale="de"/>
       <LocalizedDescription locale="ja"/>
     </ParameterDefinition>
-    <ParameterDefinition configurable="true" id="DEPROVISIONING_SCRIPT" mandatory="true" valueType="STRING">
+    <ParameterDefinition configurable="true" default="deprovisioning.sh" id="DEPROVISIONING_SCRIPT" mandatory="true" valueType="STRING">
       <LocalizedDescription locale="en">Deprovisioning Script. Absolute filesystem path or URL to script file</LocalizedDescription>
       <LocalizedDescription locale="de"/>
       <LocalizedDescription locale="ja"/>
     </ParameterDefinition>
-    <ParameterDefinition configurable="true" id="UPDATE_SCRIPT" mandatory="true" valueType="STRING">
+    <ParameterDefinition configurable="true" default="update.sh" id="UPDATE_SCRIPT" mandatory="true" valueType="STRING">
       <LocalizedDescription locale="en">Update Script. Absolute filesystem path or URL to script file</LocalizedDescription>
       <LocalizedDescription locale="de"/>
       <LocalizedDescription locale="ja"/>
     </ParameterDefinition>
-    <ParameterDefinition configurable="true" id="ASSIGN_USER_SCRIPT" mandatory="true" valueType="STRING">
+    <ParameterDefinition configurable="true" default="assign.sh" id="ASSIGN_USER_SCRIPT" mandatory="true" valueType="STRING">
       <LocalizedDescription locale="en">Assign User Script. Absolute filesystem path or URL to script file</LocalizedDescription>
       <LocalizedDescription locale="de"/>
       <LocalizedDescription locale="ja"/>
     </ParameterDefinition>
-    <ParameterDefinition configurable="true" id="DEASSIGN_USER_SCRIPT" mandatory="true" valueType="STRING">
+    <ParameterDefinition configurable="true" default="deassign.sh" id="DEASSIGN_USER_SCRIPT" mandatory="true" valueType="STRING">
       <LocalizedDescription locale="en">Deassign User Script. Absolute filesystem path or URL to script file</LocalizedDescription>
       <LocalizedDescription locale="de"/>
       <LocalizedDescription locale="ja"/>
     </ParameterDefinition>
-    <ParameterDefinition configurable="true" id="CHECK_STATUS_SCRIPT" mandatory="true" valueType="STRING">
+    <ParameterDefinition configurable="true" default="status.sh" id="CHECK_STATUS_SCRIPT" mandatory="true" valueType="STRING">
       <LocalizedDescription locale="en">Retrieve status of provisioned instance. Absolute filesystem path or URL to script file</LocalizedDescription>
       <LocalizedDescription locale="de"/>
       <LocalizedDescription locale="ja"/>
@@ -43,10 +43,49 @@
       <LocalizedDescription locale="de"/>
       <LocalizedDescription locale="ja"/>
     </ParameterDefinition>
-
-    <Event id="EVENT_USAGE_HOURS_RENTED_MACHINE">
-      <LocalizedDescription locale="de">Benutzung Stunden für gemieteten Gerät</LocalizedDescription>
-      <LocalizedDescription locale="en">Usage Hours of Rented Machine</LocalizedDescription>
+    <ParameterDefinition configurable="true" default="usage_data.sh" id="USAGEDATA_SCRIPT" mandatory="true" valueType="STRING">
+      <LocalizedDescription locale="en">A script for retrieving the usage data of the machine</LocalizedDescription>
+      <LocalizedDescription locale="de"/>
+      <LocalizedDescription locale="ja"/>
+    </ParameterDefinition>
+    <ParameterDefinition configurable="true" id="BOOKINGDATE" mandatory="true" valueType="STRING">
+      <LocalizedDescription locale="en">Machine Booking Start in yyyy-mm-dd Format.</LocalizedDescription>
+      <LocalizedDescription locale="de"/>
+      <LocalizedDescription locale="ja"/>
+    </ParameterDefinition>
+    <ParameterDefinition configurable="true" id="BOOKING_NOF_DAYS" mandatory="true" valueType="INTEGER">
+      <LocalizedDescription locale="en">Number of days.</LocalizedDescription>
+      <LocalizedDescription locale="de"/>
+      <LocalizedDescription locale="ja"/>
+    </ParameterDefinition>
+    <ParameterDefinition configurable="true" id="MY_SCRIPT_APP_NAME" mandatory="true" modificationType="ONE_TIME" valueType="STRING">
+      <LocalizedDescription locale="en">ID of the Machine</LocalizedDescription>
+      <LocalizedDescription locale="de"/>
+      <LocalizedDescription locale="ja"/>
+    </ParameterDefinition>
+    <ParameterDefinition configurable="true" id="OPERATIONS_SCRIPT" mandatory="false" valueType="STRING">
+      <LocalizedDescription locale="en">Operations Script. Absolute filesystem path or URL to script file</LocalizedDescription>
+      <LocalizedDescription locale="de"/>
+      <LocalizedDescription locale="ja"/>
+    </ParameterDefinition>
+    <ParameterDefinition configurable="true" id="UPDATE_USER_SCRIPT" mandatory="false" valueType="STRING">
+      <LocalizedDescription locale="en">Update User Script. Absolute filesystem path or URL to script file</LocalizedDescription>
+      <LocalizedDescription locale="de"/>
+      <LocalizedDescription locale="ja"/>
+    </ParameterDefinition>
+    <ParameterDefinition configurable="true" id="VERIFICATION_SCRIPT" mandatory="false" valueType="STRING">
+      <LocalizedDescription locale="en">Verification Script. Absolute filesystem path or URL to script file</LocalizedDescription>
+      <LocalizedDescription locale="de"/>
+      <LocalizedDescription locale="ja"/>
+    </ParameterDefinition>
+    <ParameterDefinition configurable="false" default="Shell" id="TECHNICAL_SERVICE_ID" mandatory="true" valueType="STRING">
+      <LocalizedDescription locale="en">Technical Service Identifier, used to generate events. Must be the same as the id of this tns:TechnicalService element.</LocalizedDescription>
+      <LocalizedDescription locale="de"/>
+      <LocalizedDescription locale="ja"/>
+    </ParameterDefinition>
+    <Event id="DAYS_CHARGED">
+      <LocalizedDescription locale="de">Maschinenmiete (Tag)</LocalizedDescription>
+      <LocalizedDescription locale="en">Machine Booking (Day)</LocalizedDescription>
       <LocalizedDescription locale="ja"/>
     </Event>
     <Operation actionURL="http://oscm-app:8880/oscm-app/webservices/oscm-app/oscm-app/org.oscm.app.v2_0.service.AsynchronousOperationProxy?wsdl" id="START_MACHINE">
